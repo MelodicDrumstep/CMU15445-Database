@@ -1,0 +1,2 @@
+SELECT DISTINCT type 
+FROM titles;
