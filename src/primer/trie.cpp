@@ -6,8 +6,47 @@ namespace bustub {
 
 // Put a new key-value pair into the trie. If the key already exists, overwrite the value.
   // Returns the new trie.
+
   template <class T>
-  auto Put(std::string_view key, T value) const -> Trie 
+  auto Trie::Get(std::string_view key) const -> const T * 
+  {
+  //throw NotImplementedException("Trie::Get is not implemented.");
+
+    if(key.size() == 0)
+    {
+        return nullptr;
+    }
+
+    size_t i = 0;
+    std::shared_ptr<const TrieNode> cur = root_;
+    
+    while(i < key.size() && cur -> children_.find(key[i]) != cur -> children_.end()) 
+    //This means that the current node has a child with the key[i]
+    {
+        cur = cur -> children_.at(key[i]);
+        i++;
+    }
+    if(i == key.size())
+    {
+        const TrieNodeWithValue<T>* node = dynamic_cast<const TrieNodeWithValue<T>*>(cur.get());
+        if(node != nullptr) 
+        {
+        return ((node -> value_).get());
+        } 
+        else 
+        {
+        return nullptr;
+        }
+    }
+    else
+    {
+        return nullptr;
+    }
+  }
+
+  
+  template <class T>
+  auto Trie::Put(std::string_view key, T value) const -> Trie 
   {
   // Note that `T` might be a non-copyable type. Always use `std::move` when creating `shared_ptr` on that value.
   //throw NotImplementedException("Trie::Put is not implemented.");
@@ -20,7 +59,7 @@ namespace bustub {
 
     if(root_ == nullptr)
     {
-        std::cout << "root is null" << std::endl;
+        ////std::cout << "root is null" << std::endl;
         new_root = std::make_shared<TrieNode>();
         old_cur = new_root;
     }
@@ -29,17 +68,17 @@ namespace bustub {
         new_root = root_ -> Clone();
     }
 
-    std::cout << "! " << std::endl;
+    ////std::cout << "! " << std::endl;
 
     std::shared_ptr<TrieNode> new_cur = new_root;
 
-    std::cout << "key size : " << key.size() << std::endl;
+    //std::cout << "key size : " << key.size() << std::endl;
     
-    std::cout << " find : " << (old_cur -> children_.find(key[i]) != old_cur -> children_.end()) << std::endl;
+    //std::cout << " find : " << (old_cur -> children_.find(key[i]) != old_cur -> children_.end()) << std::endl;
 
     while(i < key.size() && old_cur -> children_.find(key[i]) != old_cur -> children_.end())
     {
-        std::cout << "!!!" << std::endl;
+        //std::cout << "!!!" << std::endl;
         if(i == key.size() - 1)
         {
         std::shared_ptr<T> ptr2value = std::make_shared<T>(std::move(value));
@@ -82,7 +121,7 @@ namespace bustub {
 
   // Remove the key from the trie. If the key does not exist, return the original trie.
   // Otherwise, returns the new trie.
-  auto Remove(std::string_view key) const -> Trie
+  auto Trie::Remove(std::string_view key) const -> Trie
   {
     
     if(key.size() == 0)

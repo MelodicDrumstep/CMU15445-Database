@@ -10,6 +10,19 @@ namespace bustub {
 
 // This class is used to guard the value returned by the trie. It holds a reference to the root so
 // that the reference to the value will not be invalidated.
+
+/*
+The ValueGuard class is designed to protect the value returned by the trie by holding onto the root of the trie. 
+This is important because in some data structures, like tries, 
+the validity of a pointer or reference to a value can depend on the lifetime of the entire data structure. 
+If the trie is destroyed or modified, a raw pointer or reference to a value in the trie could become invalid.
+
+By returning a ValueGuard object that holds onto the root of the trie, 
+you ensure that the trie stays alive at least as long as the ValueGuard object. 
+This guarantees that the reference to the value remains valid for the lifetime of the ValueGuard.
+
+*/
+
 template <class T>
 class ValueGuard {
  public:
