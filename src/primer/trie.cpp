@@ -4,38 +4,125 @@
 
 namespace bustub {
 
-template <class T>
-auto Trie::Get(std::string_view key) const -> const T * {
-  throw NotImplementedException("Trie::Get is not implemented.");
-
-  // You should walk through the trie to find the node corresponding to the key. If the node doesn't exist, return
-  // nullptr. After you find the node, you should use `dynamic_cast` to cast it to `const TrieNodeWithValue<T> *`. If
-  // dynamic_cast returns `nullptr`, it means the type of the value is mismatched, and you should return nullptr.
-  // Otherwise, return the value.
-}
-
-template <class T>
-auto Trie::Put(std::string_view key, T value) const -> Trie {
+// Put a new key-value pair into the trie. If the key already exists, overwrite the value.
+  // Returns the new trie.
+  template <class T>
+  auto Put(std::string_view key, T value) const -> Trie 
+  {
   // Note that `T` might be a non-copyable type. Always use `std::move` when creating `shared_ptr` on that value.
-  throw NotImplementedException("Trie::Put is not implemented.");
+  //throw NotImplementedException("Trie::Put is not implemented.");
+
+
+    size_t i = 0;
+    std::shared_ptr<const TrieNode> old_cur = root_;
+    
+    std::shared_ptr<TrieNode> new_root;
+
+    if(root_ == nullptr)
+    {
+        std::cout << "root is null" << std::endl;
+        new_root = std::make_shared<TrieNode>();
+        old_cur = new_root;
+    }
+    else
+    {
+        new_root = root_ -> Clone();
+    }
+
+    std::cout << "! " << std::endl;
+
+    std::shared_ptr<TrieNode> new_cur = new_root;
+
+    std::cout << "key size : " << key.size() << std::endl;
+    
+    std::cout << " find : " << (old_cur -> children_.find(key[i]) != old_cur -> children_.end()) << std::endl;
+
+    while(i < key.size() && old_cur -> children_.find(key[i]) != old_cur -> children_.end())
+    {
+        std::cout << "!!!" << std::endl;
+        if(i == key.size() - 1)
+        {
+        std::shared_ptr<T> ptr2value = std::make_shared<T>(std::move(value));
+        std::shared_ptr<TrieNodeWithValue<T>> temp = std::make_shared<TrieNodeWithValue<T>>(ptr2value);
+        new_cur -> children_[key[i]] = temp;
+        }
+        else
+        {
+        std::shared_ptr<TrieNode> temp = old_cur -> children_.at(key[i]) -> Clone();
+        new_cur -> children_[key[i]] = temp;
+        new_cur = temp;
+        old_cur = old_cur -> children_.at(key[i]);
+        }
+        i++;
+    }
+    
+
+    while(i < key.size())
+    {
+        if(i == key.size() - 1)
+        {
+        std::shared_ptr<T> ptr2value = std::make_shared<T>(std::move(value));
+        std::shared_ptr<TrieNodeWithValue<T>> temp = std::make_shared<TrieNodeWithValue<T>>(ptr2value);
+        new_cur -> children_[key[i]] = temp;
+        }
+        else
+        {
+        std::shared_ptr<TrieNode> temp = std::make_shared<TrieNode>();
+        new_cur -> children_[key[i]] = temp;
+        new_cur = temp;
+        }
+        i++;
+    }
+    
+    return Trie(new_root);
 
   // You should walk through the trie and create new nodes if necessary. If the node corresponding to the key already
   // exists, you should create a new `TrieNodeWithValue`.
 }
 
-auto Trie::Remove(std::string_view key) const -> Trie {
-  throw NotImplementedException("Trie::Remove is not implemented.");
+  // Remove the key from the trie. If the key does not exist, return the original trie.
+  // Otherwise, returns the new trie.
+  auto Remove(std::string_view key) const -> Trie
+  {
+    
+    if(key.size() == 0)
+    {
+        return *this;
+    }
 
-  // You should walk through the trie and remove nodes if necessary. If the node doesn't contain a value any more,
-  // you should convert it to `TrieNode`. If a node doesn't have children any more, you should remove it.
-}
+    size_t i = 0;
+    std::shared_ptr<const TrieNode> cur = root_;
+    std::shared_ptr<TrieNode> new_root = root_ -> Clone();
+    std::shared_ptr<TrieNode> new_cur = new_root;
 
-// Below are explicit instantiation of template functions.
-//
-// Generally people would write the implementation of template classes and functions in the header file. However, we
-// separate the implementation into a .cpp file to make things clearer. In order to make the compiler know the
-// implementation of the template functions, we need to explicitly instantiate them here, so that they can be picked up
-// by the linker.
+    while(i < key.size() && cur -> children_.find(key[i]) != cur -> children_.end())
+    {
+        if(i == key.size() - 1)
+        {
+            if(cur -> children_.at(key[i]) -> is_value_node_)
+            {
+                if(cur -> children_.at(key[i]) -> children_.size() == 0)
+                {
+                    new_cur -> children_.erase(key[i]);
+                }
+                else
+                {
+                   std::shared_ptr<TrieNode> temp = std::make_shared<TrieNode>(std::move(cur -> children_.at(key[i]) -> children_));
+                     new_cur -> children_[key[i]] = temp;
+                }
+            }
+        }
+        else
+        {
+        std::shared_ptr<TrieNode> temp = cur -> children_.at(key[i]) -> Clone();
+        new_cur -> children_[key[i]] = temp;
+        new_cur = temp;
+        cur = cur -> children_.at(key[i]);
+        }
+        i++;
+    }
+    return Trie(new_root);
+  }
 
 template auto Trie::Put(std::string_view key, uint32_t value) const -> Trie;
 template auto Trie::Get(std::string_view key) const -> const uint32_t *;

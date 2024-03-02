@@ -101,7 +101,8 @@ class TrieNodeWithValue : public TrieNode {
 // represent the new trie.
 //
 // You are NOT allowed to remove any `const` in this project, or use `mutable` to bypass the const checks.
-class Trie {
+class Trie 
+{
  private:
   // The root of the trie.
   std::shared_ptr<const TrieNode> root_{nullptr};
