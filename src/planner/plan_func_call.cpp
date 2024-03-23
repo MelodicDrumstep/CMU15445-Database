@@ -37,11 +37,11 @@ auto Planner::GetFuncCallFromFactory(const std::string &func_name, std::vector<A
     }
     if(func_name == "lower") 
     {
-      return std::make_shared<StringExpression>(args[0], Lower);
+      return std::make_shared<StringExpression>(args[0], bustub::StringExpressionType::Lower);
     } 
     else 
     {
-      return std::make_shared<StringExpression>(args[0], Upper);
+      return std::make_shared<StringExpression>(args[0], bustub::StringExpressionType::Upper);
     }
   }
   throw Exception(fmt::format("func call {} not supported in planner yet", func_name));
