@@ -3,36 +3,109 @@
 
 namespace bustub {
 
-BasicPageGuard::BasicPageGuard(BasicPageGuard &&that) noexcept {}
+BasicPageGuard::BasicPageGuard(BasicPageGuard &&that) noexcept
+{
+    bpm_ = that.bpm_;
+    page_ = that.page_;
+    is_dirty_ = that.is_dirty_;
+    that.page_ = nullptr;
+}
 
-void BasicPageGuard::Drop() {}
+void BasicPageGuard::Drop()
+{
+    if(page_ == nullptr)
+    {
+      return;
+    }
+    bpm_ -> UnpinPage(page_ -> GetPageId(), is_dirty_);
+    page_ = nullptr;
+}
 
-auto BasicPageGuard::operator=(BasicPageGuard &&that) noexcept -> BasicPageGuard & { return *this; }
+auto BasicPageGuard::operator=(BasicPageGuard &&that) noexcept -> BasicPageGuard &
+{
+    if(this == &that)
+    {
+      return that;
+    }
+    Drop();
+    //drop the previous one
+    bpm_ = that.bpm_;
+    page_ = that.page_;
+    is_dirty_ = that.is_dirty_;
+    that.page_ = nullptr;
+    return *this;
+  }
 
-BasicPageGuard::~BasicPageGuard(){};  // NOLINT
+BasicPageGuard::~BasicPageGuard()
+{
+    this -> Drop();
+}
 
 auto BasicPageGuard::UpgradeRead() -> ReadPageGuard { return {bpm_, page_}; }
 
 auto BasicPageGuard::UpgradeWrite() -> WritePageGuard { return {bpm_, page_}; }
 
-ReadPageGuard::ReadPageGuard(BufferPoolManager *bpm, Page *page) {}
+ReadPageGuard::ReadPageGuard(BufferPoolManager *bpm, Page *page)
+{
+    guard_ = BasicPageGuard(bpm, page);
+}
 
-ReadPageGuard::ReadPageGuard(ReadPageGuard &&that) noexcept = default;
+ReadPageGuard::ReadPageGuard(ReadPageGuard &&that) noexcept = default
+{
+    this -> Drop();
+    guard_ = that.guard_;
+    that.guard_ = nullptr;
+}
 
-auto ReadPageGuard::operator=(ReadPageGuard &&that) noexcept -> ReadPageGuard & { return *this; }
+auto ReadPageGuard::operator=(ReadPageGuard &&that) noexcept -> ReadPageGuard &
+{
+  if(this == &that)
+  {
+    return that;
+  }
+  this -> Drop();
+  guard_ = that.guard_;
+  that.guard_ = nullptr;
+  return *this;
+}
 
-void ReadPageGuard::Drop() {}
+void ReadPageGuard::Drop()
+{
+    guard_.Drop();
+}
 
-ReadPageGuard::~ReadPageGuard() {}  // NOLINT
+ReadPageGuard::~ReadPageGuard()
+{
+    this -> Drop();
+}
 
-WritePageGuard::WritePageGuard(BufferPoolManager *bpm, Page *page) {}
+WritePageGuard::WritePageGuard(BufferPoolManager *bpm, Page *page)
+{
+    guard_ = BasicPageGuard(bpm, page);
+}
 
 WritePageGuard::WritePageGuard(WritePageGuard &&that) noexcept = default;
 
-auto WritePageGuard::operator=(WritePageGuard &&that) noexcept -> WritePageGuard & { return *this; }
+auto WritePageGuard::operator=(WritePageGuard &&that) noexcept -> WritePageGuard &
+{
+  if(this == &that)
+  {
+    return that;
+  }
+  this -> Drop();
+  guard_ = that.guard_;
+  that.guard_ = nullptr;
+  return *this;
+}
 
-void WritePageGuard::Drop() {}
+void WritePageGuard::Drop()
+{
+    guard_.Drop();
+}
 
-WritePageGuard::~WritePageGuard() {}  // NOLINT
+WritePageGuard::~WritePageGuard()
+{
+    this -> Drop();
+}
 
 }  // namespace bustub

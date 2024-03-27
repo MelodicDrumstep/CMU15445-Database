@@ -72,7 +72,6 @@ void LRUKReplacer::RecordAccess(frame_id_t frame_id, [[maybe_unused]] AccessType
     //BUSTUB_ASSERT(frame_id <= replacer_size_, "invalid");
     std::lock_guard<std::mutex> guard(latch_);    
 
-
     auto it = frame2node_map_.find(frame_id);
     //check if it has been accessed
 

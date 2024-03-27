@@ -106,7 +106,7 @@ class BasicPageGuard {
   friend class ReadPageGuard;
   friend class WritePageGuard;
 
-  [[maybe_unused]] BufferPoolManager *bpm_{nullptr};
+  BufferPoolManager *bpm_{nullptr};
   Page *page_{nullptr};
   bool is_dirty_{false};
 };
@@ -169,10 +169,12 @@ class ReadPageGuard {
  private:
   // You may choose to get rid of this and add your own private variables.
   BasicPageGuard guard_;
+  std::mutex read_lock;
 };
 
 class WritePageGuard {
  public:
+
   WritePageGuard() = default;
   WritePageGuard(BufferPoolManager *bpm, Page *page);
   WritePageGuard(const WritePageGuard &) = delete;
@@ -236,6 +238,7 @@ class WritePageGuard {
  private:
   // You may choose to get rid of this and add your own private variables.
   BasicPageGuard guard_;
+  std::mutex write_lock;
 };
 
 }  // namespace bustub
