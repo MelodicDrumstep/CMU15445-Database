@@ -55,7 +55,7 @@ auto LRUKReplacer::Evict(frame_id_t *frame_id) -> bool
     {
         return false;
     }
-
+    
     auto it = replacer_list.begin();
 
     *frame_id = (*it) -> fid_;

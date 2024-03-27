@@ -161,9 +161,6 @@ class LRUKReplacer {
   std::unordered_map<frame_id_t, std::shared_ptr<LRUKNode>> frame2node_map_;
   //map frame to pointer to LRUKNode
 
-  //std::unordered_map<frame_id_t, std::optional<typename std::list<LRUKNode>::iterator>> frame2iter_map_;
-  //map frame to iterator in replacer_list
-
   std::list<std::shared_ptr<LRUKNode>> replacer_list;
   //list of pointers to LRUKNode in order of lru_k
 

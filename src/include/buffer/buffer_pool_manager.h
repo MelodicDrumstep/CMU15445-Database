@@ -62,7 +62,7 @@ class BufferPoolManager {
    * You should pick the replacement frame from either the free list or the replacer (always find from the free list
    * first), and then call the AllocatePage() method to get a new page id. If the replacement frame has a dirty page,
    * you should write it back to the disk first. You also need to reset the memory and metadata for the new page.
-   *
+   * 
    * Remember to "Pin" the frame by calling replacer.SetEvictable(frame_id, false)
    * so that the replacer wouldn't evict the frame before the buffer pool manager "Unpin"s it.
    * Also, remember to record the access history of the frame in the replacer for the lru-k algorithm to work.
@@ -91,7 +91,7 @@ class BufferPoolManager {
    *
    * @brief Fetch the requested page from the buffer pool. Return nullptr if page_id needs to be fetched from the disk
    * but all frames are currently in use and not evictable (in another word, pinned).
-   *
+   * 
    * First search for page_id in the buffer pool. If not found, pick a replacement frame from either the free list or
    * the replacer (always find from the free list first), read the page from disk by scheduling a read DiskRequest with
    * disk_scheduler_->Schedule(), and replace the old page in the frame. Similar to NewPage(), if the old page is dirty,
@@ -145,7 +145,7 @@ class BufferPoolManager {
    *
    * Use the DiskManager::WritePage() method to flush a page to disk, REGARDLESS of the dirty flag.
    * Unset the dirty flag of the page after flushing.
-   *
+   * 
    * @param page_id id of page to be flushed, cannot be INVALID_PAGE_ID
    * @return false if the page could not be found in the page table, true otherwise
    */
@@ -173,6 +173,8 @@ class BufferPoolManager {
    */
   auto DeletePage(page_id_t page_id) -> bool;
 
+  void Write_back_if_Dirty(frame_id_t frame_id);
+
  private:
   /** Number of pages in the buffer pool. */
   const size_t pool_size_;
@@ -181,8 +183,8 @@ class BufferPoolManager {
 
   /** Array of buffer pool pages. */
   Page *pages_;
-  /** Pointer to the disk sheduler. */
-  std::unique_ptr<DiskScheduler> disk_scheduler_ __attribute__((__unused__));
+  /** Pointer to the disk sheduler. */ 
+  std::shared_ptr<DiskManager> disk_manager_;
   /** Pointer to the log manager. Please ignore this for P1. */
   LogManager *log_manager_ __attribute__((__unused__));
   /** Page table for keeping track of buffer pool pages. */
