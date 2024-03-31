@@ -17,16 +17,29 @@ BPLUSTREE_TYPE::BPlusTree(std::string name, page_id_t header_page_id, BufferPool
       leaf_max_size_(leaf_max_size),
       internal_max_size_(internal_max_size),
       header_page_id_(header_page_id) {
-  WritePageGuard guard = bpm_->FetchPageWrite(header_page_id_);
+  WritePageGuard guard = bpm_ -> FetchPageWrite(header_page_id_);
+  //fetch the header page (buffer pool get it)
   auto root_page = guard.AsMut<BPlusTreeHeaderPage>();
+  //Get the root page from the guard
   root_page->root_page_id_ = INVALID_PAGE_ID;
+  //Just setting the root page id to invalid page id
+  //Why we have a special class for header page? 
+  //That's because we can prevent potential race condition under concurrent environment
 }
 
 /*
  * Helper function to decide whether current b+tree is empty
  */
 INDEX_TEMPLATE_ARGUMENTS
-auto BPLUSTREE_TYPE::IsEmpty() const -> bool { return true; }
+auto BPLUSTREE_TYPE::IsEmpty() const -> bool
+{
+  //Fetch the header page
+  auto guard = bpm_ -> FetchPageRead(header_page_id_);
+  //Get the header page
+  auto header_page = guard->GetDataAs<BPlusTreeHeaderPage>();
+  //Check if the root page id is invalid
+  return header_page -> root_page_id_ == INVALID_PAGE_ID;
+}
 
 /*****************************************************************************
  * SEARCH
@@ -37,13 +50,88 @@ auto BPLUSTREE_TYPE::IsEmpty() const -> bool { return true; }
  * @return : true means key exists
  */
 INDEX_TEMPLATE_ARGUMENTS
-auto BPLUSTREE_TYPE::GetValue(const KeyType &key, std::vector<ValueType> *result, Transaction *txn) -> bool {
+auto BPLUSTREE_TYPE::GetValue(const KeyType &key, std::vector<ValueType> *result, Transaction *txn) -> bool 
+{
   // Declaration of context instance.
-  Context ctx;
-  (void)ctx;
-  return false;
+  auto guard = bpm_ -> FetchPageRead(header_page_id_);
+  auto header_page = guard -> GetDataAs<BPlusTreeHeaderPage>();
+  if(header_page -> root_page_id_ == INVALID_PAGE_ID)
+  {
+    return false;
+  }
+  //Fetch the root page
+  guard -> Drop();// This will release the lock on the page
+  
 }
 
+INDEX_TEMPLATE_ARGUMENTS
+auto BPLUSTREE_TYPE::BS(const KeyType & key, const BPlusTreePage * page) -> uint32_t
+{
+  if(page -> IsLeafPage())
+  {
+    page = std::reinterpret_cast<const LeafPage *>(page);
+    //I have to reinterpret_cast it to LeafPage in order to use the data member
+
+    //BS to find a value 
+    int start = 0;
+    int end = page -> GetSize() - 1;
+    while(start <= end)
+    {
+      int mid = (start + end) / 2;
+      if(comparator_(key, page -> KeyAt(mid)) == 0)
+      {
+        return mid;
+      }
+      else if(comparator_(key, page -> KeyAt(mid)) < 0)
+      {
+        end = mid - 1;
+      }
+      else
+      {
+        start = mid + 1;
+      }
+    }
+    return -1;
+  }
+  else// This means that the page is an internal page
+  {
+    page = std::reinterpret_cast<const InternalPage *>(page);
+    //I have to reinterpret_cast it to InternalPage in order to use the data member
+    
+    //BS to find which range should the value reside
+    int start = 1;
+    int end = page -> GetSize() - 1;
+    while(start <= end)
+    {
+      int mid = (start + end) / 2;
+      if(comparator_(key, page -> KeyAt(mid)) < 0)
+      {
+        if(mid == 1)
+        {
+          return 0;
+        }
+        if(comparator_(key, page -> KeyAt(mid - 1)) >= 0)
+        {
+          return mid - 1;
+        }
+        end = mid - 1;
+      }
+      else
+      {
+        if(mid == page -> GetSize() - 1)
+        {
+          return page -> GetSize() - 1;
+        }
+        if(comparator_(key, page -> KeyAt(mid + 1)) < 0)
+        {
+          return mid;
+        }
+        start = mid + 1;
+      }
+    }
+    return -1;
+  }
+}
 /*****************************************************************************
  * INSERTION
  *****************************************************************************/
