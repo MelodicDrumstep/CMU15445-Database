@@ -1,3 +1,5 @@
+#include "planner/planner.h"
+
 #include <memory>
 #include <utility>
 
@@ -19,48 +21,63 @@
 #include "execution/plans/filter_plan.h"
 #include "execution/plans/projection_plan.h"
 #include "fmt/format.h"
-#include "planner/planner.h"
 
-namespace bustub {
+namespace bustub
+{
 
-void Planner::PlanQuery(const BoundStatement &statement) {
-  switch (statement.type_) {
-    case StatementType::SELECT_STATEMENT: {
-      plan_ = PlanSelect(dynamic_cast<const SelectStatement &>(statement));
+void Planner::PlanQuery(const BoundStatement& statement)
+{
+  switch (statement.type_)
+  {
+    case StatementType::SELECT_STATEMENT:
+    {
+      plan_ = PlanSelect(dynamic_cast<const SelectStatement&>(statement));
       return;
     }
-    case StatementType::INSERT_STATEMENT: {
-      plan_ = PlanInsert(dynamic_cast<const InsertStatement &>(statement));
+    case StatementType::INSERT_STATEMENT:
+    {
+      plan_ = PlanInsert(dynamic_cast<const InsertStatement&>(statement));
       return;
     }
-    case StatementType::DELETE_STATEMENT: {
-      plan_ = PlanDelete(dynamic_cast<const DeleteStatement &>(statement));
+    case StatementType::DELETE_STATEMENT:
+    {
+      plan_ = PlanDelete(dynamic_cast<const DeleteStatement&>(statement));
       return;
     }
-    case StatementType::UPDATE_STATEMENT: {
-      plan_ = PlanUpdate(dynamic_cast<const UpdateStatement &>(statement));
+    case StatementType::UPDATE_STATEMENT:
+    {
+      plan_ = PlanUpdate(dynamic_cast<const UpdateStatement&>(statement));
       return;
     }
     default:
-      throw Exception(fmt::format("the statement {} is not supported in planner yet", statement.type_));
+      throw Exception(fmt::format(
+          "the statement {} is not supported in planner yet", statement.type_));
   }
 }
 
-auto Planner::MakeOutputSchema(const std::vector<std::pair<std::string, TypeId>> &exprs) -> SchemaRef {
+auto Planner::MakeOutputSchema(
+    const std::vector<std::pair<std::string, TypeId>>& exprs) -> SchemaRef
+{
   std::vector<Column> cols;
   cols.reserve(exprs.size());
-  for (const auto &[col_name, type_id] : exprs) {
-    if (type_id != TypeId::VARCHAR) {
+  for (const auto& [col_name, type_id] : exprs)
+  {
+    if (type_id != TypeId::VARCHAR)
+    {
       cols.emplace_back(col_name, type_id);
-    } else {
+    }
+    else
+    {
       cols.emplace_back(col_name, type_id, VARCHAR_DEFAULT_LENGTH);
     }
   }
   return std::make_shared<Schema>(cols);
 }
 
-void PlannerContext::AddAggregation(std::unique_ptr<BoundExpression> expr) {
-  if (!allow_aggregation_) {
+void PlannerContext::AddAggregation(std::unique_ptr<BoundExpression> expr)
+{
+  if (!allow_aggregation_)
+  {
     throw bustub::Exception("AggCall not allowed in this position");
   }
   aggregations_.push_back(std::move(expr));

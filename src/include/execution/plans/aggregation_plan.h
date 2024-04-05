@@ -23,19 +23,30 @@
 #include "fmt/format.h"
 #include "storage/table/tuple.h"
 
-namespace bustub {
+namespace bustub
+{
 
-/** AggregationType enumerates all the possible aggregation functions in our system */
-enum class AggregationType { CountStarAggregate, CountAggregate, SumAggregate, MinAggregate, MaxAggregate };
+/** AggregationType enumerates all the possible aggregation functions in our
+ * system */
+enum class AggregationType
+{
+  CountStarAggregate,
+  CountAggregate,
+  SumAggregate,
+  MinAggregate,
+  MaxAggregate
+};
 
 /**
  * AggregationPlanNode represents the various SQL aggregation functions.
  * For example, COUNT(), SUM(), MIN() and MAX().
  *
- * NOTE: To simplify this project, AggregationPlanNode must always have exactly one child.
+ * NOTE: To simplify this project, AggregationPlanNode must always have exactly
+ * one child.
  */
-class AggregationPlanNode : public AbstractPlanNode {
- public:
+class AggregationPlanNode : public AbstractPlanNode
+{
+  public:
   /**
    * Construct a new AggregationPlanNode.
    * @param output_schema The output format of this plan node
@@ -44,40 +55,62 @@ class AggregationPlanNode : public AbstractPlanNode {
    * @param aggregates The expressions that we are aggregating
    * @param agg_types The types that we are aggregating
    */
-  AggregationPlanNode(SchemaRef output_schema, AbstractPlanNodeRef child, std::vector<AbstractExpressionRef> group_bys,
-                      std::vector<AbstractExpressionRef> aggregates, std::vector<AggregationType> agg_types)
+  AggregationPlanNode(SchemaRef output_schema, AbstractPlanNodeRef child,
+                      std::vector<AbstractExpressionRef> group_bys,
+                      std::vector<AbstractExpressionRef> aggregates,
+                      std::vector<AggregationType> agg_types)
       : AbstractPlanNode(std::move(output_schema), {std::move(child)}),
         group_bys_(std::move(group_bys)),
         aggregates_(std::move(aggregates)),
-        agg_types_(std::move(agg_types)) {}
+        agg_types_(std::move(agg_types))
+  {
+  }
 
   /** @return The type of the plan node */
   auto GetType() const -> PlanType override { return PlanType::Aggregation; }
 
   /** @return the child of this aggregation plan node */
-  auto GetChildPlan() const -> AbstractPlanNodeRef {
-    BUSTUB_ASSERT(GetChildren().size() == 1, "Aggregation expected to only have one child.");
+  auto GetChildPlan() const -> AbstractPlanNodeRef
+  {
+    BUSTUB_ASSERT(GetChildren().size() == 1,
+                  "Aggregation expected to only have one child.");
     return GetChildAt(0);
   }
 
   /** @return The idx'th group by expression */
-  auto GetGroupByAt(uint32_t idx) const -> const AbstractExpressionRef & { return group_bys_[idx]; }
+  auto GetGroupByAt(uint32_t idx) const -> const AbstractExpressionRef&
+  {
+    return group_bys_[idx];
+  }
 
   /** @return The group by expressions */
-  auto GetGroupBys() const -> const std::vector<AbstractExpressionRef> & { return group_bys_; }
+  auto GetGroupBys() const -> const std::vector<AbstractExpressionRef>&
+  {
+    return group_bys_;
+  }
 
   /** @return The idx'th aggregate expression */
-  auto GetAggregateAt(uint32_t idx) const -> const AbstractExpressionRef & { return aggregates_[idx]; }
+  auto GetAggregateAt(uint32_t idx) const -> const AbstractExpressionRef&
+  {
+    return aggregates_[idx];
+  }
 
   /** @return The aggregate expressions */
-  auto GetAggregates() const -> const std::vector<AbstractExpressionRef> & { return aggregates_; }
+  auto GetAggregates() const -> const std::vector<AbstractExpressionRef>&
+  {
+    return aggregates_;
+  }
 
   /** @return The aggregate types */
-  auto GetAggregateTypes() const -> const std::vector<AggregationType> & { return agg_types_; }
+  auto GetAggregateTypes() const -> const std::vector<AggregationType>&
+  {
+    return agg_types_;
+  }
 
-  static auto InferAggSchema(const std::vector<AbstractExpressionRef> &group_bys,
-                             const std::vector<AbstractExpressionRef> &aggregates,
-                             const std::vector<AggregationType> &agg_types) -> Schema;
+  static auto InferAggSchema(
+      const std::vector<AbstractExpressionRef>& group_bys,
+      const std::vector<AbstractExpressionRef>& aggregates,
+      const std::vector<AggregationType>& agg_types) -> Schema;
 
   BUSTUB_PLAN_NODE_CLONE_WITH_CHILDREN(AggregationPlanNode);
 
@@ -88,23 +121,28 @@ class AggregationPlanNode : public AbstractPlanNode {
   /** The aggregation types */
   std::vector<AggregationType> agg_types_;
 
- protected:
+  protected:
   auto PlanNodeToString() const -> std::string override;
 };
 
 /** AggregateKey represents a key in an aggregation operation */
-struct AggregateKey {
+struct AggregateKey
+{
   /** The group-by values */
   std::vector<Value> group_bys_;
 
   /**
    * Compares two aggregate keys for equality.
    * @param other the other aggregate key to be compared with
-   * @return `true` if both aggregate keys have equivalent group-by expressions, `false` otherwise
+   * @return `true` if both aggregate keys have equivalent group-by expressions,
+   * `false` otherwise
    */
-  auto operator==(const AggregateKey &other) const -> bool {
-    for (uint32_t i = 0; i < other.group_bys_.size(); i++) {
-      if (group_bys_[i].CompareEquals(other.group_bys_[i]) != CmpBool::CmpTrue) {
+  auto operator==(const AggregateKey& other) const -> bool
+  {
+    for (uint32_t i = 0; i < other.group_bys_.size(); i++)
+    {
+      if (group_bys_[i].CompareEquals(other.group_bys_[i]) != CmpBool::CmpTrue)
+      {
         return false;
       }
     }
@@ -113,23 +151,30 @@ struct AggregateKey {
 };
 
 /** AggregateValue represents a value for each of the running aggregates */
-struct AggregateValue {
+struct AggregateValue
+{
   /** The aggregate values */
   std::vector<Value> aggregates_;
 };
 
 }  // namespace bustub
 
-namespace std {
+namespace std
+{
 
 /** Implements std::hash on AggregateKey */
 template <>
-struct hash<bustub::AggregateKey> {
-  auto operator()(const bustub::AggregateKey &agg_key) const -> std::size_t {
+struct hash<bustub::AggregateKey>
+{
+  auto operator()(const bustub::AggregateKey& agg_key) const -> std::size_t
+  {
     size_t curr_hash = 0;
-    for (const auto &key : agg_key.group_bys_) {
-      if (!key.IsNull()) {
-        curr_hash = bustub::HashUtil::CombineHashes(curr_hash, bustub::HashUtil::HashValue(&key));
+    for (const auto& key : agg_key.group_bys_)
+    {
+      if (!key.IsNull())
+      {
+        curr_hash = bustub::HashUtil::CombineHashes(
+            curr_hash, bustub::HashUtil::HashValue(&key));
       }
     }
     return curr_hash;
@@ -139,12 +184,15 @@ struct hash<bustub::AggregateKey> {
 }  // namespace std
 
 template <>
-struct fmt::formatter<bustub::AggregationType> : formatter<std::string> {
+struct fmt::formatter<bustub::AggregationType> : formatter<std::string>
+{
   template <typename FormatContext>
-  auto format(bustub::AggregationType c, FormatContext &ctx) const {
+  auto format(bustub::AggregationType c, FormatContext& ctx) const
+  {
     using bustub::AggregationType;
     std::string name = "unknown";
-    switch (c) {
+    switch (c)
+    {
       case AggregationType::CountStarAggregate:
         name = "count_star";
         break;

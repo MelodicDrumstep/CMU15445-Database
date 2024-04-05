@@ -10,16 +10,18 @@
 //
 //===----------------------------------------------------------------------===//
 
+#include "type/integer_type.h"
+
 #include <cassert>
 #include <cmath>
 #include <iostream>
 #include <string>
 
-#include "type/integer_type.h"
-
-namespace bustub {
+namespace bustub
+{
 #define INT_COMPARE_FUNC(OP)                                               \
-  switch (right.GetTypeId()) {                                             \
+  switch (right.GetTypeId())                                               \
+  {                                                                        \
     case TypeId::TINYINT:                                                  \
       return GetCmpBool(left.value_.integer_ OP right.GetAs<int8_t>());    \
     case TypeId::SMALLINT:                                                 \
@@ -30,7 +32,8 @@ namespace bustub {
       return GetCmpBool(left.value_.integer_ OP right.GetAs<int64_t>());   \
     case TypeId::DECIMAL:                                                  \
       return GetCmpBool(left.value_.integer_ OP right.GetAs<double>());    \
-    case TypeId::VARCHAR: {                                                \
+    case TypeId::VARCHAR:                                                  \
+    {                                                                      \
       auto r_value = right.CastAs(TypeId::INTEGER);                        \
       return GetCmpBool(left.value_.integer_ OP r_value.GetAs<int32_t>()); \
     }                                                                      \
@@ -38,39 +41,47 @@ namespace bustub {
       break;                                                               \
   }  // SWITCH
 
-#define INT_MODIFY_FUNC(METHOD, OP)                                                 \
-  switch (right.GetTypeId()) {                                                      \
-    case TypeId::TINYINT:                                                           \
-      /* NOLINTNEXTLINE */                                                          \
-      return METHOD<int32_t, int8_t>(left, right);                                  \
-    case TypeId::SMALLINT:                                                          \
-      /* NOLINTNEXTLINE */                                                          \
-      return METHOD<int32_t, int16_t>(left, right);                                 \
-    case TypeId::INTEGER:                                                           \
-      /* NOLINTNEXTLINE */                                                          \
-      return METHOD<int32_t, int32_t>(left, right);                                 \
-    case TypeId::BIGINT:                                                            \
-      /* NOLINTNEXTLINE */                                                          \
-      return METHOD<int32_t, int64_t>(left, right);                                 \
-    case TypeId::DECIMAL:                                                           \
-      return Value(TypeId::DECIMAL, left.value_.integer_ OP right.GetAs<double>()); \
-    case TypeId::VARCHAR: {                                                         \
-      auto r_value = right.CastAs(TypeId::INTEGER);                                 \
-      /* NOLINTNEXTLINE */                                                          \
-      return METHOD<int32_t, int32_t>(left, r_value);                               \
-    }                                                                               \
-    default:                                                                        \
-      break;                                                                        \
+#define INT_MODIFY_FUNC(METHOD, OP)                                \
+  switch (right.GetTypeId())                                       \
+  {                                                                \
+    case TypeId::TINYINT:                                          \
+      /* NOLINTNEXTLINE */                                         \
+      return METHOD<int32_t, int8_t>(left, right);                 \
+    case TypeId::SMALLINT:                                         \
+      /* NOLINTNEXTLINE */                                         \
+      return METHOD<int32_t, int16_t>(left, right);                \
+    case TypeId::INTEGER:                                          \
+      /* NOLINTNEXTLINE */                                         \
+      return METHOD<int32_t, int32_t>(left, right);                \
+    case TypeId::BIGINT:                                           \
+      /* NOLINTNEXTLINE */                                         \
+      return METHOD<int32_t, int64_t>(left, right);                \
+    case TypeId::DECIMAL:                                          \
+      return Value(TypeId::DECIMAL,                                \
+                   left.value_.integer_ OP right.GetAs<double>()); \
+    case TypeId::VARCHAR:                                          \
+    {                                                              \
+      auto r_value = right.CastAs(TypeId::INTEGER);                \
+      /* NOLINTNEXTLINE */                                         \
+      return METHOD<int32_t, int32_t>(left, r_value);              \
+    }                                                              \
+    default:                                                       \
+      break;                                                       \
   }  // SWITCH
 
 IntegerType::IntegerType(TypeId type) : IntegerParentType(type) {}
 
-auto IntegerType::IsZero(const Value &val) const -> bool { return (val.value_.integer_ == 0); }
+auto IntegerType::IsZero(const Value& val) const -> bool
+{
+  return (val.value_.integer_ == 0);
+}
 
-auto IntegerType::Add(const Value &left, const Value &right) const -> Value {
+auto IntegerType::Add(const Value& left, const Value& right) const -> Value
+{
   assert(left.CheckInteger());
   assert(left.CheckComparable(right));
-  if (left.IsNull() || right.IsNull()) {
+  if (left.IsNull() || right.IsNull())
+  {
     return left.OperateNull(right);
   }
 
@@ -78,10 +89,12 @@ auto IntegerType::Add(const Value &left, const Value &right) const -> Value {
   throw Exception("type error");
 }
 
-auto IntegerType::Subtract(const Value &left, const Value &right) const -> Value {
+auto IntegerType::Subtract(const Value& left, const Value& right) const -> Value
+{
   assert(left.CheckInteger());
   assert(left.CheckComparable(right));
-  if (left.IsNull() || right.IsNull()) {
+  if (left.IsNull() || right.IsNull())
+  {
     return left.OperateNull(right);
   }
 
@@ -90,10 +103,12 @@ auto IntegerType::Subtract(const Value &left, const Value &right) const -> Value
   throw Exception("type error");
 }
 
-auto IntegerType::Multiply(const Value &left, const Value &right) const -> Value {
+auto IntegerType::Multiply(const Value& left, const Value& right) const -> Value
+{
   assert(left.CheckInteger());
   assert(left.CheckComparable(right));
-  if (left.IsNull() || right.IsNull()) {
+  if (left.IsNull() || right.IsNull())
+  {
     return left.OperateNull(right);
   }
 
@@ -102,15 +117,19 @@ auto IntegerType::Multiply(const Value &left, const Value &right) const -> Value
   throw Exception("type error");
 }
 
-auto IntegerType::Divide(const Value &left, const Value &right) const -> Value {
+auto IntegerType::Divide(const Value& left, const Value& right) const -> Value
+{
   assert(left.CheckInteger());
   assert(left.CheckComparable(right));
-  if (left.IsNull() || right.IsNull()) {
+  if (left.IsNull() || right.IsNull())
+  {
     return left.OperateNull(right);
   }
 
-  if (right.IsZero()) {
-    throw Exception(ExceptionType::DIVIDE_BY_ZERO, "Division by zero on right-hand side");
+  if (right.IsZero())
+  {
+    throw Exception(ExceptionType::DIVIDE_BY_ZERO,
+                    "Division by zero on right-hand side");
   }
 
   INT_MODIFY_FUNC(DivideValue, /);
@@ -118,18 +137,23 @@ auto IntegerType::Divide(const Value &left, const Value &right) const -> Value {
   throw Exception("type error");
 }
 
-auto IntegerType::Modulo(const Value &left, const Value &right) const -> Value {
+auto IntegerType::Modulo(const Value& left, const Value& right) const -> Value
+{
   assert(left.CheckInteger());
   assert(left.CheckComparable(right));
-  if (left.IsNull() || right.IsNull()) {
+  if (left.IsNull() || right.IsNull())
+  {
     return left.OperateNull(right);
   }
 
-  if (right.IsZero()) {
-    throw Exception(ExceptionType::DIVIDE_BY_ZERO, "Division by zero on right-hand side");
+  if (right.IsZero())
+  {
+    throw Exception(ExceptionType::DIVIDE_BY_ZERO,
+                    "Division by zero on right-hand side");
   }
 
-  switch (right.GetTypeId()) {
+  switch (right.GetTypeId())
+  {
     case TypeId::TINYINT:
       return ModuloValue<int32_t, int8_t>(left, right);
     case TypeId::SMALLINT:
@@ -139,8 +163,10 @@ auto IntegerType::Modulo(const Value &left, const Value &right) const -> Value {
     case TypeId::BIGINT:
       return ModuloValue<int32_t, int64_t>(left, right);
     case TypeId::DECIMAL:
-      return {TypeId::DECIMAL, ValMod(left.value_.integer_, right.GetAs<double>())};
-    case TypeId::VARCHAR: {
+      return {TypeId::DECIMAL,
+              ValMod(left.value_.integer_, right.GetAs<double>())};
+    case TypeId::VARCHAR:
+    {
       auto r_value = right.CastAs(TypeId::INTEGER);
       return ModuloValue<int32_t, int32_t>(left, r_value);
     }
@@ -151,20 +177,27 @@ auto IntegerType::Modulo(const Value &left, const Value &right) const -> Value {
   throw Exception("type error");
 }
 
-auto IntegerType::Sqrt(const Value &val) const -> Value {
+auto IntegerType::Sqrt(const Value& val) const -> Value
+{
   assert(val.CheckInteger());
-  if (val.IsNull()) {
+  if (val.IsNull())
+  {
     return OperateNull(val, val);
   }
 
-  if (val.value_.integer_ < 0) {
-    throw Exception(ExceptionType::DECIMAL, "Cannot take square root of a negative number.");
+  if (val.value_.integer_ < 0)
+  {
+    throw Exception(ExceptionType::DECIMAL,
+                    "Cannot take square root of a negative number.");
   }
   return {TypeId::DECIMAL, std::sqrt(val.value_.integer_)};
 }
 
-auto IntegerType::OperateNull(const Value &left __attribute__((unused)), const Value &right) const -> Value {
-  switch (right.GetTypeId()) {
+auto IntegerType::OperateNull(const Value& left __attribute__((unused)),
+                              const Value& right) const -> Value
+{
+  switch (right.GetTypeId())
+  {
     case TypeId::TINYINT:
     case TypeId::SMALLINT:
     case TypeId::INTEGER:
@@ -180,11 +213,14 @@ auto IntegerType::OperateNull(const Value &left __attribute__((unused)), const V
   throw Exception("type error");
 }
 
-auto IntegerType::CompareEquals(const Value &left, const Value &right) const -> CmpBool {
+auto IntegerType::CompareEquals(const Value& left, const Value& right) const
+    -> CmpBool
+{
   assert(left.CheckInteger());
   assert(left.CheckComparable(right));
 
-  if (left.IsNull() || right.IsNull()) {
+  if (left.IsNull() || right.IsNull())
+  {
     return CmpBool::CmpNull;
   }
 
@@ -193,10 +229,13 @@ auto IntegerType::CompareEquals(const Value &left, const Value &right) const -> 
   throw Exception("type error");
 }
 
-auto IntegerType::CompareNotEquals(const Value &left, const Value &right) const -> CmpBool {
+auto IntegerType::CompareNotEquals(const Value& left, const Value& right) const
+    -> CmpBool
+{
   assert(left.CheckInteger());
   assert(left.CheckComparable(right));
-  if (left.IsNull() || right.IsNull()) {
+  if (left.IsNull() || right.IsNull())
+  {
     return CmpBool::CmpNull;
   }
 
@@ -205,10 +244,13 @@ auto IntegerType::CompareNotEquals(const Value &left, const Value &right) const 
   throw Exception("type error");
 }
 
-auto IntegerType::CompareLessThan(const Value &left, const Value &right) const -> CmpBool {
+auto IntegerType::CompareLessThan(const Value& left, const Value& right) const
+    -> CmpBool
+{
   assert(left.CheckInteger());
   assert(left.CheckComparable(right));
-  if (left.IsNull() || right.IsNull()) {
+  if (left.IsNull() || right.IsNull())
+  {
     return CmpBool::CmpNull;
   }
 
@@ -217,10 +259,13 @@ auto IntegerType::CompareLessThan(const Value &left, const Value &right) const -
   throw Exception("type error");
 }
 
-auto IntegerType::CompareLessThanEquals(const Value &left, const Value &right) const -> CmpBool {
+auto IntegerType::CompareLessThanEquals(const Value& left,
+                                        const Value& right) const -> CmpBool
+{
   assert(left.CheckInteger());
   assert(left.CheckComparable(right));
-  if (left.IsNull() || right.IsNull()) {
+  if (left.IsNull() || right.IsNull())
+  {
     return CmpBool::CmpNull;
   }
 
@@ -229,10 +274,13 @@ auto IntegerType::CompareLessThanEquals(const Value &left, const Value &right) c
   throw Exception("type error");
 }
 
-auto IntegerType::CompareGreaterThan(const Value &left, const Value &right) const -> CmpBool {
+auto IntegerType::CompareGreaterThan(const Value& left,
+                                     const Value& right) const -> CmpBool
+{
   assert(left.CheckInteger());
   assert(left.CheckComparable(right));
-  if (left.IsNull() || right.IsNull()) {
+  if (left.IsNull() || right.IsNull())
+  {
     return CmpBool::CmpNull;
   }
 
@@ -241,10 +289,13 @@ auto IntegerType::CompareGreaterThan(const Value &left, const Value &right) cons
   throw Exception("type error");
 }
 
-auto IntegerType::CompareGreaterThanEquals(const Value &left, const Value &right) const -> CmpBool {
+auto IntegerType::CompareGreaterThanEquals(const Value& left,
+                                           const Value& right) const -> CmpBool
+{
   assert(left.CheckInteger());
   assert(left.CheckComparable(right));
-  if (left.IsNull() || right.IsNull()) {
+  if (left.IsNull() || right.IsNull())
+  {
     return CmpBool::CmpNull;
   }
 
@@ -253,70 +304,95 @@ auto IntegerType::CompareGreaterThanEquals(const Value &left, const Value &right
   throw Exception("type error");
 }
 
-auto IntegerType::ToString(const Value &val) const -> std::string {
+auto IntegerType::ToString(const Value& val) const -> std::string
+{
   assert(val.CheckInteger());
 
-  if (val.IsNull()) {
+  if (val.IsNull())
+  {
     return "integer_null";
   }
   return std::to_string(val.value_.integer_);
 }
 
-void IntegerType::SerializeTo(const Value &val, char *storage) const {
-  *reinterpret_cast<int32_t *>(storage) = val.value_.integer_;
+void IntegerType::SerializeTo(const Value& val, char* storage) const
+{
+  *reinterpret_cast<int32_t*>(storage) = val.value_.integer_;
 }
 
 // Deserialize a value of the given type from the given storage space.
-auto IntegerType::DeserializeFrom(const char *storage) const -> Value {
-  int32_t val = *reinterpret_cast<const int32_t *>(storage);
+auto IntegerType::DeserializeFrom(const char* storage) const -> Value
+{
+  int32_t val = *reinterpret_cast<const int32_t*>(storage);
   return {type_id_, val};
 }
 
-auto IntegerType::Copy(const Value &val) const -> Value {
+auto IntegerType::Copy(const Value& val) const -> Value
+{
   assert(val.CheckInteger());
   return {val.GetTypeId(), val.value_.integer_};
 }
 
-auto IntegerType::CastAs(const Value &val, const TypeId type_id) const -> Value {
-  switch (type_id) {
-    case TypeId::TINYINT: {
-      if (val.IsNull()) {
+auto IntegerType::CastAs(const Value& val, const TypeId type_id) const -> Value
+{
+  switch (type_id)
+  {
+    case TypeId::TINYINT:
+    {
+      if (val.IsNull())
+      {
         return {type_id, BUSTUB_INT8_NULL};
       }
-      if (val.GetAs<int32_t>() > BUSTUB_INT8_MAX || val.GetAs<int32_t>() < BUSTUB_INT8_MIN) {
-        throw Exception(ExceptionType::OUT_OF_RANGE, "Numeric value out of range.");
+      if (val.GetAs<int32_t>() > BUSTUB_INT8_MAX ||
+          val.GetAs<int32_t>() < BUSTUB_INT8_MIN)
+      {
+        throw Exception(ExceptionType::OUT_OF_RANGE,
+                        "Numeric value out of range.");
       }
       return {type_id, static_cast<int8_t>(val.GetAs<int32_t>())};
     }
-    case TypeId::SMALLINT: {
-      if (val.IsNull()) {
+    case TypeId::SMALLINT:
+    {
+      if (val.IsNull())
+      {
         return {type_id, BUSTUB_INT16_NULL};
       }
-      if (val.GetAs<int32_t>() > BUSTUB_INT16_MAX || val.GetAs<int32_t>() < BUSTUB_INT16_MIN) {
-        throw Exception(ExceptionType::OUT_OF_RANGE, "Numeric value out of range.");
+      if (val.GetAs<int32_t>() > BUSTUB_INT16_MAX ||
+          val.GetAs<int32_t>() < BUSTUB_INT16_MIN)
+      {
+        throw Exception(ExceptionType::OUT_OF_RANGE,
+                        "Numeric value out of range.");
       }
       return {type_id, static_cast<int16_t>(val.GetAs<int32_t>())};
     }
-    case TypeId::INTEGER: {
-      if (val.IsNull()) {
+    case TypeId::INTEGER:
+    {
+      if (val.IsNull())
+      {
         return {type_id, BUSTUB_INT32_NULL};
       }
       return {type_id, static_cast<int32_t>(val.GetAs<int32_t>())};
     }
-    case TypeId::BIGINT: {
-      if (val.IsNull()) {
+    case TypeId::BIGINT:
+    {
+      if (val.IsNull())
+      {
         return {type_id, BUSTUB_INT64_NULL};
       }
       return {type_id, static_cast<int64_t>(val.GetAs<int32_t>())};
     }
-    case TypeId::DECIMAL: {
-      if (val.IsNull()) {
+    case TypeId::DECIMAL:
+    {
+      if (val.IsNull())
+      {
         return {type_id, BUSTUB_DECIMAL_NULL};
       }
       return {type_id, static_cast<double>(val.GetAs<int32_t>())};
     }
-    case TypeId::VARCHAR: {
-      if (val.IsNull()) {
+    case TypeId::VARCHAR:
+    {
+      if (val.IsNull())
+      {
         return {TypeId::VARCHAR, nullptr, 0, false};
       }
       return {TypeId::VARCHAR, val.ToString()};
@@ -324,6 +400,7 @@ auto IntegerType::CastAs(const Value &val, const TypeId type_id) const -> Value 
     default:
       break;
   }
-  throw Exception("Integer is not coercable to " + Type::TypeIdToString(type_id));
+  throw Exception("Integer is not coercable to " +
+                  Type::TypeIdToString(type_id));
 }
 }  // namespace bustub

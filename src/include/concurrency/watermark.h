@@ -5,26 +5,33 @@
 #include "concurrency/transaction.h"
 #include "storage/table/tuple.h"
 
-namespace bustub {
+namespace bustub
+{
 
 /**
  * @brief tracks all the read timestamps.
  *
  */
-class Watermark {
- public:
-  explicit Watermark(timestamp_t commit_ts) : commit_ts_(commit_ts), watermark_(commit_ts) {}
+class Watermark
+{
+  public:
+  explicit Watermark(timestamp_t commit_ts)
+      : commit_ts_(commit_ts), watermark_(commit_ts)
+  {
+  }
 
   auto AddTxn(timestamp_t read_ts) -> void;
 
   auto RemoveTxn(timestamp_t read_ts) -> void;
 
-  /** The caller should update commit ts before removing the txn from the watermark so that we can track watermark
-   * correctly. */
+  /** The caller should update commit ts before removing the txn from the
+   * watermark so that we can track watermark correctly. */
   auto UpdateCommitTs(timestamp_t commit_ts) { commit_ts_ = commit_ts; }
 
-  auto GetWatermark() -> timestamp_t {
-    if (current_reads_.empty()) {
+  auto GetWatermark() -> timestamp_t
+  {
+    if (current_reads_.empty())
+    {
       return commit_ts_;
     }
     return watermark_;

@@ -8,8 +8,9 @@
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
 
-// The above copyright notice and this permission notice (including the next paragraph)
-// shall be included in all copies or substantial portions of the Software.
+// The above copyright notice and this permission notice (including the next
+// paragraph) shall be included in all copies or substantial portions of the
+// Software.
 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -21,22 +22,32 @@
 //===----------------------------------------------------------------------===//
 
 #include "binder/keyword_helper.h"
+
 #include "binder/binder.h"
 #include "common/util/string_util.h"
 
-namespace bustub {
+namespace bustub
+{
 
-auto KeywordHelper::IsKeyword(const std::string &text) -> bool { return Binder::IsKeyword(text); }
+auto KeywordHelper::IsKeyword(const std::string& text) -> bool
+{
+  return Binder::IsKeyword(text);
+}
 
-auto KeywordHelper::RequiresQuotes(const std::string &text) -> bool {
-  for (size_t i = 0; i < text.size(); i++) {
-    if (i > 0 && (text[i] >= '0' && text[i] <= '9')) {
+auto KeywordHelper::RequiresQuotes(const std::string& text) -> bool
+{
+  for (size_t i = 0; i < text.size(); i++)
+  {
+    if (i > 0 && (text[i] >= '0' && text[i] <= '9'))
+    {
       continue;
     }
-    if (text[i] >= 'a' && text[i] <= 'z') {
+    if (text[i] >= 'a' && text[i] <= 'z')
+    {
       continue;
     }
-    if (text[i] == '_') {
+    if (text[i] == '_')
+    {
       continue;
     }
     return true;
@@ -44,11 +55,16 @@ auto KeywordHelper::RequiresQuotes(const std::string &text) -> bool {
   return IsKeyword(text);
 }
 
-auto KeywordHelper::WriteOptionallyQuoted(const std::string &text, char quote) -> std::string {
-  if (!RequiresQuotes(text)) {
+auto KeywordHelper::WriteOptionallyQuoted(const std::string& text, char quote)
+    -> std::string
+{
+  if (!RequiresQuotes(text))
+  {
     return text;
   }
-  return std::string(1, quote) + StringUtil::Replace(text, std::string(1, quote), std::string(2, quote)) +
+  return std::string(1, quote) +
+         StringUtil::Replace(text, std::string(1, quote),
+                             std::string(2, quote)) +
          std::string(1, quote);
 }
 

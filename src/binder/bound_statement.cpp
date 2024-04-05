@@ -1,6 +1,7 @@
 #include "binder/bound_statement.h"
 
-namespace bustub {
+namespace bustub
+{
 
 BoundStatement::BoundStatement(StatementType type) : type_(type) {}
 

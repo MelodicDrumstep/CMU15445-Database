@@ -11,6 +11,7 @@
 //===----------------------------------------------------------------------===//
 
 #include <string>
+
 #include "common/exception.h"
 #include "type/bigint_type.h"
 #include "type/boolean_type.h"
@@ -24,9 +25,10 @@
 #include "type/varlen_type.h"
 #include "type/vector_type.h"
 
-namespace bustub {
+namespace bustub
+{
 
-Type *Type::k_types[] = {new Type(TypeId::INVALID),
+Type* Type::k_types[] = {new Type(TypeId::INVALID),
                          new BooleanType(),
                          new TinyintType(),
                          new SmallintType(),
@@ -38,8 +40,10 @@ Type *Type::k_types[] = {new Type(TypeId::INVALID),
                          new VectorType()};
 
 // Get the size of this data type in bytes
-auto Type::GetTypeSize(const TypeId type_id) -> uint64_t {
-  switch (type_id) {
+auto Type::GetTypeSize(const TypeId type_id) -> uint64_t
+{
+  switch (type_id)
+  {
     case BOOLEAN:
     case TINYINT:
       return 1;
@@ -59,8 +63,10 @@ auto Type::GetTypeSize(const TypeId type_id) -> uint64_t {
   throw Exception(ExceptionType::UNKNOWN_TYPE, "Unknown type.");
 }
 
-auto Type::IsCoercableFrom(const TypeId type_id) const -> bool {
-  switch (type_id_) {
+auto Type::IsCoercableFrom(const TypeId type_id) const -> bool
+{
+  switch (type_id_)
+  {
     case INVALID:
       return false;
     case BOOLEAN:
@@ -70,7 +76,8 @@ auto Type::IsCoercableFrom(const TypeId type_id) const -> bool {
     case INTEGER:
     case BIGINT:
     case DECIMAL:
-      switch (type_id) {
+      switch (type_id)
+      {
         case TINYINT:
         case SMALLINT:
         case INTEGER:
@@ -85,7 +92,8 @@ auto Type::IsCoercableFrom(const TypeId type_id) const -> bool {
     case TIMESTAMP:
       return (type_id == VARCHAR || type_id == TIMESTAMP);
     case VARCHAR:
-      switch (type_id) {
+      switch (type_id)
+      {
         case BOOLEAN:
         case TINYINT:
         case SMALLINT:
@@ -104,8 +112,10 @@ auto Type::IsCoercableFrom(const TypeId type_id) const -> bool {
   }  // END SWITCH
 }
 
-auto Type::TypeIdToString(const TypeId type_id) -> std::string {
-  switch (type_id) {
+auto Type::TypeIdToString(const TypeId type_id) -> std::string
+{
+  switch (type_id)
+  {
     case INVALID:
       return "INVALID";
     case BOOLEAN:
@@ -131,8 +141,10 @@ auto Type::TypeIdToString(const TypeId type_id) -> std::string {
   }
 }
 
-auto Type::GetMinValue(TypeId type_id) -> Value {
-  switch (type_id) {
+auto Type::GetMinValue(TypeId type_id) -> Value
+{
+  switch (type_id)
+  {
     case BOOLEAN:
       return {type_id, 0};
     case TINYINT:
@@ -155,8 +167,10 @@ auto Type::GetMinValue(TypeId type_id) -> Value {
   throw Exception(ExceptionType::MISMATCH_TYPE, "Cannot get minimal value.");
 }
 
-auto Type::GetMaxValue(TypeId type_id) -> Value {
-  switch (type_id) {
+auto Type::GetMaxValue(TypeId type_id) -> Value
+{
+  switch (type_id)
+  {
     case BOOLEAN:
       return {type_id, 1};
     case TINYINT:
@@ -179,86 +193,115 @@ auto Type::GetMaxValue(TypeId type_id) -> Value {
   throw Exception(ExceptionType::MISMATCH_TYPE, "Cannot get max value.");
 }
 
-auto Type::CompareEquals(const Value &left __attribute__((unused)), const Value &right __attribute__((unused))) const
-    -> CmpBool {
+auto Type::CompareEquals(const Value& left __attribute__((unused)),
+                         const Value& right __attribute__((unused))) const
+    -> CmpBool
+{
   throw NotImplementedException("CompareEquals not implemented");
 }
 
-auto Type::CompareNotEquals(const Value &left __attribute__((unused)), const Value &right __attribute__((unused))) const
-    -> CmpBool {
+auto Type::CompareNotEquals(const Value& left __attribute__((unused)),
+                            const Value& right __attribute__((unused))) const
+    -> CmpBool
+{
   throw NotImplementedException("CompareNotEquals not implemented");
 }
 
-auto Type::CompareLessThan(const Value &left __attribute__((unused)), const Value &right __attribute__((unused))) const
-    -> CmpBool {
+auto Type::CompareLessThan(const Value& left __attribute__((unused)),
+                           const Value& right __attribute__((unused))) const
+    -> CmpBool
+{
   throw NotImplementedException("CompareLessThan not implemented");
 }
-auto Type::CompareLessThanEquals(const Value &left __attribute__((unused)),
-                                 const Value &right __attribute__((unused))) const -> CmpBool {
+auto Type::CompareLessThanEquals(const Value& left __attribute__((unused)),
+                                 const Value& right
+                                 __attribute__((unused))) const -> CmpBool
+{
   throw NotImplementedException("CompareLessThanEqual not implemented");
 }
-auto Type::CompareGreaterThan(const Value &left __attribute__((unused)),
-                              const Value &right __attribute__((unused))) const -> CmpBool {
+auto Type::CompareGreaterThan(const Value& left __attribute__((unused)),
+                              const Value& right __attribute__((unused))) const
+    -> CmpBool
+{
   throw NotImplementedException("CompareGreaterThan not implemented");
 }
-auto Type::CompareGreaterThanEquals(const Value &left __attribute__((unused)),
-                                    const Value &right __attribute__((unused))) const -> CmpBool {
+auto Type::CompareGreaterThanEquals(const Value& left __attribute__((unused)),
+                                    const Value& right
+                                    __attribute__((unused))) const -> CmpBool
+{
   throw NotImplementedException("CompareGreaterThanEqual not implemented");
 }
 
 // Other mathematical functions
-auto Type::Add(const Value &left __attribute__((unused)), const Value &right __attribute__((unused))) const -> Value {
+auto Type::Add(const Value& left __attribute__((unused)),
+               const Value& right __attribute__((unused))) const -> Value
+{
   throw NotImplementedException("Add not implemented");
 }
 
-auto Type::Subtract(const Value &left __attribute__((unused)), const Value &right __attribute__((unused))) const
-    -> Value {
+auto Type::Subtract(const Value& left __attribute__((unused)),
+                    const Value& right __attribute__((unused))) const -> Value
+{
   throw NotImplementedException("Subtract not implemented");
 }
 
-auto Type::Multiply(const Value &left __attribute__((unused)), const Value &right __attribute__((unused))) const
-    -> Value {
+auto Type::Multiply(const Value& left __attribute__((unused)),
+                    const Value& right __attribute__((unused))) const -> Value
+{
   throw NotImplementedException("Multiply not implemented");
 }
 
-auto Type::Divide(const Value &left __attribute__((unused)), const Value &right __attribute__((unused))) const
-    -> Value {
+auto Type::Divide(const Value& left __attribute__((unused)),
+                  const Value& right __attribute__((unused))) const -> Value
+{
   throw NotImplementedException("Divide not implemented");
 }
 
-auto Type::Modulo(const Value &left __attribute__((unused)), const Value &right __attribute__((unused))) const
-    -> Value {
+auto Type::Modulo(const Value& left __attribute__((unused)),
+                  const Value& right __attribute__((unused))) const -> Value
+{
   throw NotImplementedException("Modulo not implemented");
 }
 
-auto Type::Min(const Value &left __attribute__((unused)), const Value &right __attribute__((unused))) const -> Value {
+auto Type::Min(const Value& left __attribute__((unused)),
+               const Value& right __attribute__((unused))) const -> Value
+{
   throw NotImplementedException("Min not implemented");
 }
 
-auto Type::Max(const Value &left __attribute__((unused)), const Value &right __attribute__((unused))) const -> Value {
+auto Type::Max(const Value& left __attribute__((unused)),
+               const Value& right __attribute__((unused))) const -> Value
+{
   throw NotImplementedException("Max not implemented");
 }
 
-auto Type::Sqrt(const Value &val __attribute__((unused))) const -> Value {
+auto Type::Sqrt(const Value& val __attribute__((unused))) const -> Value
+{
   throw NotImplementedException("Sqrt not implemented");
 }
 
-auto Type::OperateNull(const Value &val __attribute__((unused)), const Value &right __attribute__((unused))) const
-    -> Value {
+auto Type::OperateNull(const Value& val __attribute__((unused)),
+                       const Value& right __attribute__((unused))) const
+    -> Value
+{
   throw NotImplementedException("OperateNull not implemented");
 }
 
-auto Type::IsZero(const Value &val __attribute__((unused))) const -> bool {
+auto Type::IsZero(const Value& val __attribute__((unused))) const -> bool
+{
   throw NotImplementedException("isZero not implemented");
 }
 // Is the data inlined into this classes storage space, or must it be accessed
 // through an indirection/pointer?
-auto Type::IsInlined(const Value &val __attribute__((unused))) const -> bool {
+auto Type::IsInlined(const Value& val __attribute__((unused))) const -> bool
+{
   throw NotImplementedException("IsLined not implemented");
 }
 
 // Return a stringified version of this value
-auto Type::ToString(const Value &val __attribute__((unused))) const -> std::string {
+auto Type::ToString(const Value& val __attribute__((unused))) const
+    -> std::string
+{
   throw NotImplementedException("ToString not implemented");
 }
 
@@ -267,32 +310,42 @@ auto Type::ToString(const Value &val __attribute__((unused))) const -> std::stri
 // space, or whether we must store only a reference to this value. If inlined
 // is false, we may use the provided data pool to allocate space for this
 // value, storing a reference into the allocated pool space in the storage.
-void Type::SerializeTo(const Value &val __attribute__((unused)), char *storage __attribute__((unused))) const {
+void Type::SerializeTo(const Value& val __attribute__((unused)),
+                       char* storage __attribute__((unused))) const
+{
   throw NotImplementedException("SerializeTo not implemented");
 }
 
 // Deserialize a value of the given type from the given storage space.
-auto Type::DeserializeFrom(const char *storage __attribute__((unused))) const -> Value {
+auto Type::DeserializeFrom(const char* storage __attribute__((unused))) const
+    -> Value
+{
   throw NotImplementedException("DeserializeFrom not implemented");
 }
 
 // Create a copy of this value
-auto Type::Copy(const Value &val __attribute__((unused))) const -> Value {
+auto Type::Copy(const Value& val __attribute__((unused))) const -> Value
+{
   throw NotImplementedException("Copy not implemented");
 }
 
-auto Type::CastAs(const Value &val __attribute__((unused)), const TypeId type_id __attribute__((unused))) const
-    -> Value {
+auto Type::CastAs(const Value& val __attribute__((unused)),
+                  const TypeId type_id __attribute__((unused))) const -> Value
+{
   throw NotImplementedException("CastAs not implemented");
 }
 
 // Access the raw variable length data
-auto Type::GetData(const Value &val __attribute__((unused))) const -> const char * {
+auto Type::GetData(const Value& val __attribute__((unused))) const -> const
+    char*
+{
   throw NotImplementedException("GetData from value not implemented");
 }
 
 // Get the length of the variable length data
-auto Type::GetStorageSize(const Value &val __attribute__((unused))) const -> uint32_t {
+auto Type::GetStorageSize(const Value& val __attribute__((unused))) const
+    -> uint32_t
+{
   throw NotImplementedException("GetStorageSize not implemented");
 }
 

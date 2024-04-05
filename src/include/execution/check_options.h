@@ -17,9 +17,11 @@
 
 #pragma once
 
-namespace bustub {
+namespace bustub
+{
 
-enum class CheckOption : uint8_t {
+enum class CheckOption : uint8_t
+{
   ENABLE_NLJ_CHECK = 0,
   ENABLE_TOPN_CHECK = 1,
 };
@@ -28,8 +30,9 @@ enum class CheckOption : uint8_t {
  * The CheckOptions class contains the set of check options used for testing
  * executor logic.
  */
-class CheckOptions {
- public:
+class CheckOptions
+{
+  public:
   std::unordered_set<CheckOption> check_options_set_;
 };
 

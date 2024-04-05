@@ -17,13 +17,18 @@
 #include "binder/table_ref/bound_base_table_ref.h"
 #include "catalog/column.h"
 
-namespace bustub {
+namespace bustub
+{
 
-class IndexStatement : public BoundStatement {
- public:
-  explicit IndexStatement(std::string index_name, std::unique_ptr<BoundBaseTableRef> table,
-                          std::vector<std::unique_ptr<BoundColumnRef>> cols, std::string index_type,
-                          std::vector<std::string> col_options, std::vector<std::pair<std::string, int>> options);
+class IndexStatement : public BoundStatement
+{
+  public:
+  explicit IndexStatement(std::string index_name,
+                          std::unique_ptr<BoundBaseTableRef> table,
+                          std::vector<std::unique_ptr<BoundColumnRef>> cols,
+                          std::string index_type,
+                          std::vector<std::string> col_options,
+                          std::vector<std::pair<std::string, int>> options);
 
   /** Name of the index */
   std::string index_name_;

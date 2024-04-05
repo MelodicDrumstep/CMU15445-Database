@@ -1,4 +1,5 @@
-namespace bustub {
+namespace bustub
+{
 
 void OptimizerHelperFunction() {}
 

@@ -28,32 +28,47 @@
 #include "type/type_id.h"
 #include "type/value_factory.h"
 
-namespace bustub {
+namespace bustub
+{
 
-enum class StringExpressionType { Lower, Upper };
+enum class StringExpressionType
+{
+  Lower,
+  Upper
+};
 
 /**
  * StringExpression represents two expressions being computed.
  */
-class StringExpression : public AbstractExpression {
- public:
+class StringExpression : public AbstractExpression
+{
+  public:
   StringExpression(AbstractExpressionRef arg, StringExpressionType expr_type)
-      : AbstractExpression({std::move(arg)}, Column{"<val>", TypeId::VARCHAR, 256 /* hardcode max length */}),
-        expr_type_{expr_type} {
-    if (GetChildAt(0)->GetReturnType().GetType() != TypeId::VARCHAR) {
-      BUSTUB_ENSURE(GetChildAt(0)->GetReturnType().GetType() == TypeId::VARCHAR, "unexpected arg");
+      : AbstractExpression(
+            {std::move(arg)},
+            Column{"<val>", TypeId::VARCHAR, 256 /* hardcode max length */}),
+        expr_type_{expr_type}
+  {
+    if (GetChildAt(0)->GetReturnType().GetType() != TypeId::VARCHAR)
+    {
+      BUSTUB_ENSURE(GetChildAt(0)->GetReturnType().GetType() == TypeId::VARCHAR,
+                    "unexpected arg");
     }
   }
 
-  auto Compute(const std::string &val) const -> std::string {
+  auto Compute(const std::string& val) const -> std::string
+  {
     // TODO(student): implement upper / lower.
     std::string result;
-    switch (expr_type_) {
+    switch (expr_type_)
+    {
       case StringExpressionType::Lower:
-        std::transform(val.begin(), val.end(), std::back_inserter(result), [](unsigned char c) { return std::tolower(c); });
+        std::transform(val.begin(), val.end(), std::back_inserter(result),
+                       [](unsigned char c) { return std::tolower(c); });
         break;
       case StringExpressionType::Upper:
-        std::transform(val.begin(), val.end(), std::back_inserter(result), [](unsigned char c) { return std::toupper(c); });
+        std::transform(val.begin(), val.end(), std::back_inserter(result),
+                       [](unsigned char c) { return std::toupper(c); });
         break;
       default:
         throw NotImplementedException("Unknown string expression type");
@@ -61,36 +76,48 @@ class StringExpression : public AbstractExpression {
     return result;
   }
 
-  auto Evaluate(const Tuple *tuple, const Schema &schema) const -> Value override {
+  auto Evaluate(const Tuple* tuple, const Schema& schema) const
+      -> Value override
+  {
     Value val = GetChildAt(0)->Evaluate(tuple, schema);
-    auto str = val.GetAs<char *>();
+    auto str = val.GetAs<char*>();
     return ValueFactory::GetVarcharValue(Compute(str));
   }
 
-  auto EvaluateJoin(const Tuple *left_tuple, const Schema &left_schema, const Tuple *right_tuple,
-                    const Schema &right_schema) const -> Value override {
-    Value val = GetChildAt(0)->EvaluateJoin(left_tuple, left_schema, right_tuple, right_schema);
-    auto str = val.GetAs<char *>();
+  auto EvaluateJoin(const Tuple* left_tuple, const Schema& left_schema,
+                    const Tuple* right_tuple, const Schema& right_schema) const
+      -> Value override
+  {
+    Value val = GetChildAt(0)->EvaluateJoin(left_tuple, left_schema,
+                                            right_tuple, right_schema);
+    auto str = val.GetAs<char*>();
     return ValueFactory::GetVarcharValue(Compute(str));
   }
 
-  /** @return the string representation of the expression node and its children */
-  auto ToString() const -> std::string override { return fmt::format("{}({})", expr_type_, *GetChildAt(0)); }
+  /** @return the string representation of the expression node and its children
+   */
+  auto ToString() const -> std::string override
+  {
+    return fmt::format("{}({})", expr_type_, *GetChildAt(0));
+  }
 
   BUSTUB_EXPR_CLONE_WITH_CHILDREN(StringExpression);
 
   StringExpressionType expr_type_;
 
- private:
+  private:
 };
 }  // namespace bustub
 
 template <>
-struct fmt::formatter<bustub::StringExpressionType> : formatter<string_view> {
+struct fmt::formatter<bustub::StringExpressionType> : formatter<string_view>
+{
   template <typename FormatContext>
-  auto format(bustub::StringExpressionType c, FormatContext &ctx) const {
+  auto format(bustub::StringExpressionType c, FormatContext& ctx) const
+  {
     string_view name;
-    switch (c) {
+    switch (c)
+    {
       case bustub::StringExpressionType::Upper:
         name = "upper";
         break;

@@ -19,21 +19,23 @@
 #include "execution/executors/abstract_executor.h"
 #include "execution/plans/abstract_plan.h"
 
-namespace bustub {
+namespace bustub
+{
 
 /**
  * InitCheckExecutor counts the number of times the child operator calls init.
  */
-class InitCheckExecutor : public AbstractExecutor {
- public:
+class InitCheckExecutor : public AbstractExecutor
+{
+  public:
   /**
    * Construct a new InitCheckExecutor instance.
    * @param exec_ctx The executor context
    * @param plan The init check plan to be executed
    * @param child_executor The child executor from which init calls are counted
    */
-  InitCheckExecutor(ExecutorContext *exec_ctx, AbstractPlanNodeRef plan,
-                    std::unique_ptr<AbstractExecutor> &&child_executor);
+  InitCheckExecutor(ExecutorContext* exec_ctx, AbstractPlanNodeRef plan,
+                    std::unique_ptr<AbstractExecutor>&& child_executor);
 
   /** Initialize the InitCheck */
   void Init() override;
@@ -44,10 +46,13 @@ class InitCheckExecutor : public AbstractExecutor {
    * @param[out] rid The next tuple RID produced by the child executor
    * @return `true` if a tuple was produced, `false` if there are no more tuples
    */
-  auto Next(Tuple *tuple, RID *rid) -> bool override;
+  auto Next(Tuple* tuple, RID* rid) -> bool override;
 
   /** @return The output schema for the child executor */
-  auto GetOutputSchema() const -> const Schema & override { return plan_->OutputSchema(); };
+  auto GetOutputSchema() const -> const Schema& override
+  {
+    return plan_->OutputSchema();
+  };
 
   /** @return The number of inits */
   auto GetInitCount() const -> std::size_t { return n_init_; };
@@ -55,7 +60,7 @@ class InitCheckExecutor : public AbstractExecutor {
   /** @return The number of nexts */
   auto GetNextCount() const -> std::size_t { return n_next_; };
 
- private:
+  private:
   /** InitCheckExecutor returns `true` when it should be polled again */
   constexpr static const bool EXECUTOR_ACTIVE{true};
 

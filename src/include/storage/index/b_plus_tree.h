@@ -1,13 +1,3 @@
-/**
- * b_plus_tree.h
- *
- * Implementation of simple b+ tree data structure where internal pages direct
- * the search and leaf pages contain actual data.
- * (1) We only support unique key
- * (2) support insert & remove
- * (3) The structure should shrink and grow dynamically
- * (4) Implement index iterator for range scan
- */
 #pragma once
 
 #include <algorithm>
@@ -21,6 +11,7 @@
 
 #include "common/config.h"
 #include "common/macros.h"
+#include "common/rwlatch.h"
 #include "concurrency/transaction.h"
 #include "storage/index/index_iterator.h"
 #include "storage/page/b_plus_tree_header_page.h"
@@ -28,7 +19,8 @@
 #include "storage/page/b_plus_tree_leaf_page.h"
 #include "storage/page/page_guard.h"
 
-namespace bustub {
+namespace bustub
+{
 
 struct PrintableBPlusTree;
 
@@ -38,48 +30,87 @@ struct PrintableBPlusTree;
  * Hint: This class is designed to help you keep track of the pages
  * that you're modifying or accessing.
  */
-class Context {
- public:
-  // When you insert into / remove from the B+ tree, store the write guard of header page here.
-  // Remember to drop the header page guard and set it to nullopt when you want to unlock all.
+class Context
+{
+  public:
+  // When you insert into / remove from the B+ tree, store the write guard of
+  // header page here. Remember to drop the header page guard and set it to
+  // nullopt when you want to unlock all.
   std::optional<WritePageGuard> header_page_{std::nullopt};
 
-  // Save the root page id here so that it's easier to know if the current page is the root page.
+  // Save the root page id here so that it's easier to know if the current page
+  // is the root page.
   page_id_t root_page_id_{INVALID_PAGE_ID};
 
   // Store the write guards of the pages that you're modifying here.
   std::deque<WritePageGuard> write_set_;
+  // When you try to push_back a "page guard" into the set, the move constructor
+  // will be called so that the original one will become useless
 
   // You may want to use this when getting value, but not necessary.
   std::deque<ReadPageGuard> read_set_;
 
-  auto IsRootPage(page_id_t page_id) -> bool { return page_id == root_page_id_; }
+  auto IsRootPage(page_id_t page_id) -> bool
+  {
+    return page_id == root_page_id_;
+  }
 };
 
 #define BPLUSTREE_TYPE BPlusTree<KeyType, ValueType, KeyComparator>
 
 // Main class providing the API for the Interactive B+ Tree.
 INDEX_TEMPLATE_ARGUMENTS
-class BPlusTree {
+class BPlusTree
+{
   using InternalPage = BPlusTreeInternalPage<KeyType, page_id_t, KeyComparator>;
   using LeafPage = BPlusTreeLeafPage<KeyType, ValueType, KeyComparator>;
 
- public:
-  explicit BPlusTree(std::string name, page_id_t header_page_id, BufferPoolManager *buffer_pool_manager,
-                     const KeyComparator &comparator, int leaf_max_size = LEAF_PAGE_SIZE,
+  public:
+  explicit BPlusTree(std::string name, page_id_t header_page_id,
+                     BufferPoolManager* buffer_pool_manager,
+                     const KeyComparator& comparator,
+                     int leaf_max_size = LEAF_PAGE_SIZE,
                      int internal_max_size = INTERNAL_PAGE_SIZE);
 
   // Returns true if this B+ tree has no keys and values.
   auto IsEmpty() const -> bool;
 
   // Insert a key-value pair into this B+ tree.
-  auto Insert(const KeyType &key, const ValueType &value, Transaction *txn = nullptr) -> bool;
+  auto Insert(const KeyType& key, const ValueType& value,
+              Transaction* txn = nullptr) -> bool;
+
+  //Helper functions
+  auto Improved_Crabbing_Insertion(const KeyType& key, const ValueType& value,
+                  int & insert_slot, MappingType & inserted_pair, 
+                  MappingType & tmp, Transaction* txn = nullptr) -> bool;
+
+  auto Crabbing_Insertion(const KeyType& key, const ValueType& value,
+                  int & insert_slot, Context & my_context, MappingType & inserted_pair, 
+                  MappingType & tmp, Transaction* txn = nullptr) -> bool;
+
+  auto Split(LeafPage * leaf_page, const KeyType& key, const ValueType& value,
+                  int & insert_slot, Context & my_context, page_id_t & leaf_page_id, 
+                  MappingType & inserted_pair, MappingType & tmp, WritePageGuard && leaf_guard, 
+                  Transaction* txn = nullptr) -> bool;
 
   // Remove a key and its value from this B+ tree.
-  void Remove(const KeyType &key, Transaction *txn);
+  void Remove(const KeyType& key, Transaction* txn);
+  
+  //Helper functions
+  void Crabbing_Deletion(const KeyType& key, Context & my_context, Transaction* txn);
+
+  void Recursive_Deletion(const KeyType& key, Context & my_context, LeafPage * leaf_page, 
+                          WritePageGuard && leaf_guard, KeyType & key_for_locate, Transaction* txn);
+
+  void Handle_Underflow_Leaf(const KeyType& key, Context & my_context, LeafPage * leaf_page, 
+                                  WritePageGuard && leaf_guard, KeyType & key_for_locate, int parent_index,
+                                  InternalPage * parent_page, WritePageGuard && parent_guard, Transaction* txn);
+
+  void Handle_Underflow_Parent(const KeyType& key, Context & my_context, KeyType & key_for_locate, Transaction* txn);
 
   // Return the value associated with a given key
-  auto GetValue(const KeyType &key, std::vector<ValueType> *result, Transaction *txn = nullptr) -> bool;
+  auto GetValue(const KeyType& key, std::vector<ValueType>* result,
+                Transaction* txn = nullptr) -> bool;
 
   // Return the page id of the root node
   auto GetRootPageId() -> page_id_t;
@@ -89,13 +120,13 @@ class BPlusTree {
 
   auto End() -> INDEXITERATOR_TYPE;
 
-  auto Begin(const KeyType &key) -> INDEXITERATOR_TYPE;
+  auto Begin(const KeyType& key) -> INDEXITERATOR_TYPE;
 
   // Print the B+ tree
-  void Print(BufferPoolManager *bpm);
+  void Print(BufferPoolManager* bpm);
 
   // Draw the B+ tree
-  void Draw(BufferPoolManager *bpm, const std::string &outf);
+  void Draw(BufferPoolManager* bpm, const std::string& outf);
 
   /**
    * @brief draw a B+ tree, below is a printed
@@ -111,10 +142,10 @@ class BPlusTree {
   auto DrawBPlusTree() -> std::string;
 
   // read data from file and insert one by one
-  void InsertFromFile(const std::string &file_name, Transaction *txn = nullptr);
+  void InsertFromFile(const std::string& file_name, Transaction* txn = nullptr);
 
   // read data from file and remove one by one
-  void RemoveFromFile(const std::string &file_name, Transaction *txn = nullptr);
+  void RemoveFromFile(const std::string& file_name, Transaction* txn = nullptr);
 
   /**
    * @brief Read batch operations from input file, below is a sample file format
@@ -125,13 +156,20 @@ class BPlusTree {
    *                 (3)                (7)
    *            (1,2)    (3,4)    (5,6)    (7,10,30) //  The output tree example
    */
-  void BatchOpsFromFile(const std::string &file_name, Transaction *txn = nullptr);
+  void BatchOpsFromFile(const std::string& file_name,
+                        Transaction* txn = nullptr);
 
- private:
+  auto BS(const KeyType& key, const BPlusTreePage* bp_page, bool type) -> int;
+
+  auto BinaryFind(const LeafPage* leaf_page, const KeyType& key) -> int;
+  auto BinaryFind(const InternalPage* internal_page, const KeyType& key) -> int;
+
+  private:
   /* Debug Routines for FREE!! */
-  void ToGraph(page_id_t page_id, const BPlusTreePage *page, std::ofstream &out);
+  void ToGraph(page_id_t page_id, const BPlusTreePage* page,
+               std::ofstream& out);
 
-  void PrintTree(page_id_t page_id, const BPlusTreePage *page);
+  void PrintTree(page_id_t page_id, const BPlusTreePage* page);
 
   /**
    * @brief Convert A B+ tree into a Printable B+ tree
@@ -143,19 +181,22 @@ class BPlusTree {
 
   // member variable
   std::string index_name_;
-  BufferPoolManager *bpm_;
+  BufferPoolManager* bpm_;
   KeyComparator comparator_;
   std::vector<std::string> log;  // NOLINT
   int leaf_max_size_;
   int internal_max_size_;
   page_id_t header_page_id_;
+
+  ReaderWriterLatch rwlatch_;
 };
 
 /**
  * @brief for test only. PrintableBPlusTree is a printable B+ tree.
  * We first convert B+ tree into a printable B+ tree and the print it.
  */
-struct PrintableBPlusTree {
+struct PrintableBPlusTree
+{
   int size_;
   std::string keys_;
   std::vector<PrintableBPlusTree> children_;
@@ -166,18 +207,22 @@ struct PrintableBPlusTree {
    *
    * @param out_buf
    */
-  void Print(std::ostream &out_buf) {
-    std::vector<PrintableBPlusTree *> que = {this};
-    while (!que.empty()) {
-      std::vector<PrintableBPlusTree *> new_que;
+  void Print(std::ostream& out_buf)
+  {
+    std::vector<PrintableBPlusTree*> que = {this};
+    while (!que.empty())
+    {
+      std::vector<PrintableBPlusTree*> new_que;
 
-      for (auto &t : que) {
+      for (auto& t : que)
+      {
         int padding = (t->size_ - t->keys_.size()) / 2;
         out_buf << std::string(padding, ' ');
         out_buf << t->keys_;
         out_buf << std::string(padding, ' ');
 
-        for (auto &c : t->children_) {
+        for (auto& c : t->children_)
+        {
           new_que.push_back(&c);
         }
       }

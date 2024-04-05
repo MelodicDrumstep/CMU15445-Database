@@ -16,13 +16,16 @@
 #include "catalog/column.h"
 #include "type/value.h"
 
-namespace bustub {
+namespace bustub
+{
 
 class SelectStatement;
 
-class InsertStatement : public BoundStatement {
- public:
-  explicit InsertStatement(std::unique_ptr<BoundBaseTableRef> table, std::unique_ptr<SelectStatement> select);
+class InsertStatement : public BoundStatement
+{
+  public:
+  explicit InsertStatement(std::unique_ptr<BoundBaseTableRef> table,
+                           std::unique_ptr<SelectStatement> select);
 
   std::unique_ptr<BoundBaseTableRef> table_;
 

@@ -11,89 +11,118 @@
 //===----------------------------------------------------------------------===//
 
 #include "type/timestamp_type.h"
+
 #include <string>
 
 #include "type/boolean_type.h"
 #include "type/value_factory.h"
 #include "type/varlen_type.h"
 
-namespace bustub {
+namespace bustub
+{
 
 TimestampType::TimestampType() : Type(TypeId::TIMESTAMP) {}
 
-auto TimestampType::CompareEquals(const Value &left, const Value &right) const -> CmpBool {
+auto TimestampType::CompareEquals(const Value& left, const Value& right) const
+    -> CmpBool
+{
   assert(left.CheckComparable(right));
-  if (left.IsNull() || right.IsNull()) {
+  if (left.IsNull() || right.IsNull())
+  {
     return CmpBool::CmpNull;
   }
   return GetCmpBool(left.GetAs<uint64_t>() == right.GetAs<uint64_t>());
 }
 
-auto TimestampType::CompareNotEquals(const Value &left, const Value &right) const -> CmpBool {
+auto TimestampType::CompareNotEquals(const Value& left,
+                                     const Value& right) const -> CmpBool
+{
   assert(left.CheckComparable(right));
-  if (right.IsNull()) {
+  if (right.IsNull())
+  {
     return CmpBool::CmpNull;
   }
   return GetCmpBool(left.GetAs<uint64_t>() != right.GetAs<uint64_t>());
 }
 
-auto TimestampType::CompareLessThan(const Value &left, const Value &right) const -> CmpBool {
+auto TimestampType::CompareLessThan(const Value& left, const Value& right) const
+    -> CmpBool
+{
   assert(left.CheckComparable(right));
-  if (left.IsNull() || right.IsNull()) {
+  if (left.IsNull() || right.IsNull())
+  {
     return CmpBool::CmpNull;
   }
   return GetCmpBool(left.GetAs<uint64_t>() < right.GetAs<uint64_t>());
 }
 
-auto TimestampType::CompareLessThanEquals(const Value &left, const Value &right) const -> CmpBool {
+auto TimestampType::CompareLessThanEquals(const Value& left,
+                                          const Value& right) const -> CmpBool
+{
   assert(left.CheckComparable(right));
-  if (left.IsNull() || right.IsNull()) {
+  if (left.IsNull() || right.IsNull())
+  {
     return CmpBool::CmpNull;
   }
   return GetCmpBool(left.GetAs<uint64_t>() <= right.GetAs<uint64_t>());
 }
 
-auto TimestampType::CompareGreaterThan(const Value &left, const Value &right) const -> CmpBool {
+auto TimestampType::CompareGreaterThan(const Value& left,
+                                       const Value& right) const -> CmpBool
+{
   assert(left.CheckComparable(right));
-  if (left.IsNull() || right.IsNull()) {
+  if (left.IsNull() || right.IsNull())
+  {
     return CmpBool::CmpNull;
   }
   return GetCmpBool(left.GetAs<int64_t>() > right.GetAs<int64_t>());
 }
 
-auto TimestampType::CompareGreaterThanEquals(const Value &left, const Value &right) const -> CmpBool {
+auto TimestampType::CompareGreaterThanEquals(const Value& left,
+                                             const Value& right) const
+    -> CmpBool
+{
   assert(left.CheckComparable(right));
-  if (left.IsNull() || right.IsNull()) {
+  if (left.IsNull() || right.IsNull())
+  {
     return CmpBool::CmpNull;
   }
   return GetCmpBool(left.GetAs<uint64_t>() >= right.GetAs<uint64_t>());
 }
 
-auto TimestampType::Min(const Value &left, const Value &right) const -> Value {
+auto TimestampType::Min(const Value& left, const Value& right) const -> Value
+{
   assert(left.CheckComparable(right));
-  if (left.IsNull() || right.IsNull()) {
+  if (left.IsNull() || right.IsNull())
+  {
     return left.OperateNull(right);
   }
-  if (left.CompareLessThan(right) == CmpBool::CmpTrue) {
+  if (left.CompareLessThan(right) == CmpBool::CmpTrue)
+  {
     return left.Copy();
   }
   return right.Copy();
 }
 
-auto TimestampType::Max(const Value &left, const Value &right) const -> Value {
+auto TimestampType::Max(const Value& left, const Value& right) const -> Value
+{
   assert(left.CheckComparable(right));
-  if (left.IsNull() || right.IsNull()) {
+  if (left.IsNull() || right.IsNull())
+  {
     return left.OperateNull(right);
   }
-  if (left.CompareGreaterThanEquals(right) == CmpBool::CmpTrue) {
+  if (left.CompareGreaterThanEquals(right) == CmpBool::CmpTrue)
+  {
     return left.Copy();
   }
   return right.Copy();
 }
 
 // Debug
-auto TimestampType::ToString(const Value &val) const -> std::string {
-  if (val.IsNull()) {
+auto TimestampType::ToString(const Value& val) const -> std::string
+{
+  if (val.IsNull())
+  {
     return "timestamp_null";
   }
   uint64_t tm = val.value_.timestamp_;
@@ -118,13 +147,18 @@ auto TimestampType::ToString(const Value &val) const -> std::string {
   const size_t zone_len = 5;
   char str[date_str_len];
   char zone[zone_len];
-  snprintf(str, date_str_len, "%04d-%02d-%02d %02d:%02d:%02d.%06d", year, month, day, hour, min, sec, micro);
-  if (tz >= 0) {
+  snprintf(str, date_str_len, "%04d-%02d-%02d %02d:%02d:%02d.%06d", year, month,
+           day, hour, min, sec, micro);
+  if (tz >= 0)
+  {
     str[26] = '+';
-  } else {
+  }
+  else
+  {
     str[26] = '-';
   }
-  if (tz < 0) {
+  if (tz < 0)
+  {
     tz = -tz;
   }
   snprintf(zone, zone_len, "%02d", tz);  // NOLINT
@@ -132,32 +166,39 @@ auto TimestampType::ToString(const Value &val) const -> std::string {
   return std::string(std::string(str) + std::string(zone));
 }
 
-void TimestampType::SerializeTo(const Value &val, char *storage) const {
-  *reinterpret_cast<uint64_t *>(storage) = val.value_.timestamp_;
+void TimestampType::SerializeTo(const Value& val, char* storage) const
+{
+  *reinterpret_cast<uint64_t*>(storage) = val.value_.timestamp_;
 }
 
 // Deserialize a value of the given type from the given storage space.
-auto TimestampType::DeserializeFrom(const char *storage) const -> Value {
-  uint64_t val = *reinterpret_cast<const uint64_t *>(storage);
+auto TimestampType::DeserializeFrom(const char* storage) const -> Value
+{
+  uint64_t val = *reinterpret_cast<const uint64_t*>(storage);
   return {type_id_, val};
 }
 
 // Create a copy of this value
-auto TimestampType::Copy(const Value &val) const -> Value { return {val}; }
+auto TimestampType::Copy(const Value& val) const -> Value { return {val}; }
 
-auto TimestampType::CastAs(const Value &val, const TypeId type_id) const -> Value {
-  switch (type_id) {
+auto TimestampType::CastAs(const Value& val, const TypeId type_id) const
+    -> Value
+{
+  switch (type_id)
+  {
     case TypeId::TIMESTAMP:
       return Copy(val);
     case TypeId::VARCHAR:
-      if (val.IsNull()) {
+      if (val.IsNull())
+      {
         return ValueFactory::GetVarcharValue(nullptr, false);
       }
       return ValueFactory::GetVarcharValue(val.ToString());
     default:
       break;
   }
-  throw Exception("TIMESTAMP is not coercable to " + Type::GetInstance(type_id)->ToString(val));
+  throw Exception("TIMESTAMP is not coercable to " +
+                  Type::GetInstance(type_id)->ToString(val));
 }
 
 }  // namespace bustub

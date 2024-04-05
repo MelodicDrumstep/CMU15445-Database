@@ -13,52 +13,70 @@
 #include "fmt/format.h"
 #include "fmt/ranges.h"
 
-namespace bustub {
+namespace bustub
+{
 
-auto BoundFuncCall::ToString() const -> std::string { return fmt::format("{}({})", func_name_, args_); }
+auto BoundFuncCall::ToString() const -> std::string
+{
+  return fmt::format("{}({})", func_name_, args_);
+}
 
-auto BoundAggCall::ToString() const -> std::string {
-  if (is_distinct_) {
+auto BoundAggCall::ToString() const -> std::string
+{
+  if (is_distinct_)
+  {
     return fmt::format("{}_distinct({})", func_name_, args_);
   }
   return fmt::format("{}({})", func_name_, args_);
 }
 
-auto BoundExpressionListRef::ToString() const -> std::string {
-  return fmt::format("BoundExpressionListRef {{ identifier={}, values={} }}", identifier_, values_);
+auto BoundExpressionListRef::ToString() const -> std::string
+{
+  return fmt::format("BoundExpressionListRef {{ identifier={}, values={} }}",
+                     identifier_, values_);
 }
 
-auto BoundCTERef::ToString() const -> std::string {
+auto BoundCTERef::ToString() const -> std::string
+{
   return fmt::format("BoundCTERef {{ alias={}, cte={} }}", alias_, cte_name_);
 }
 
-auto BoundSubqueryRef::ToString() const -> std::string {
+auto BoundSubqueryRef::ToString() const -> std::string
+{
   std::vector<std::string> columns;
-  for (const auto &name : select_list_name_) {
+  for (const auto& name : select_list_name_)
+  {
     columns.push_back(fmt::format("{}", fmt::join(name, ".")));
   }
-  return fmt::format("BoundSubqueryRef {{\n  alias={},\n  subquery={},\n  columns={},\n}}", alias_,
-                     StringUtil::IndentAllLines(subquery_->ToString(), 2, true), columns);
+  return fmt::format(
+      "BoundSubqueryRef {{\n  alias={},\n  subquery={},\n  columns={},\n}}",
+      alias_, StringUtil::IndentAllLines(subquery_->ToString(), 2, true),
+      columns);
 }
 
-auto BoundWindow::ToString() const -> std::string {
+auto BoundWindow::ToString() const -> std::string
+{
   std::vector<std::string> partition_by;
-  for (const auto &expr : partition_by_) {
+  for (const auto& expr : partition_by_)
+  {
     partition_by.push_back(expr->ToString());
   }
 
   std::vector<std::string> order_bys;
-  for (const auto &expr : order_bys_) {
+  for (const auto& expr : order_bys_)
+  {
     order_bys.push_back(expr->ToString());
   }
 
   std::string start_offset = "None";
-  if (start_offset_.has_value()) {
+  if (start_offset_.has_value())
+  {
     start_offset = (*start_offset_)->ToString();
   }
 
   std::string end_offset = "None";
-  if (end_offset_.has_value()) {
+  if (end_offset_.has_value())
+  {
     end_offset = (*end_offset_)->ToString();
   }
 
@@ -66,9 +84,12 @@ auto BoundWindow::ToString() const -> std::string {
   std::string end_mode = Binder::WindowBoundaryToString(end_);
 
   // TODO(avery): add frame
-  return fmt::format("{}({}) Over {{  partition_by={},  order_by={} }}", func_name_, args_,
-                     StringUtil::IndentAllLines(fmt::format("[{}]", fmt::join(partition_by, ", ")), 2, true),
-                     StringUtil::IndentAllLines(fmt::format("[{}]", fmt::join(order_bys, ", ")), 2, true));
+  return fmt::format(
+      "{}({}) Over {{  partition_by={},  order_by={} }}", func_name_, args_,
+      StringUtil::IndentAllLines(
+          fmt::format("[{}]", fmt::join(partition_by, ", ")), 2, true),
+      StringUtil::IndentAllLines(
+          fmt::format("[{}]", fmt::join(order_bys, ", ")), 2, true));
 }
 
 }  // namespace bustub

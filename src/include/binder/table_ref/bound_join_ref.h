@@ -8,12 +8,14 @@
 #include "binder/bound_table_ref.h"
 #include "fmt/format.h"
 
-namespace bustub {
+namespace bustub
+{
 
 /**
  * Join types.
  */
-enum class JoinType : uint8_t {
+enum class JoinType : uint8_t
+{
   INVALID = 0, /**< Invalid join type. */
   LEFT = 1,    /**< Left join. */
   RIGHT = 3,   /**< Right join. */
@@ -22,21 +24,28 @@ enum class JoinType : uint8_t {
 };
 
 /**
- * A join. e.g., `SELECT * FROM x INNER JOIN y ON ...`, where `x INNER JOIN y ON ...` is `BoundJoinRef`.
+ * A join. e.g., `SELECT * FROM x INNER JOIN y ON ...`, where `x INNER JOIN y ON
+ * ...` is `BoundJoinRef`.
  */
-class BoundJoinRef : public BoundTableRef {
- public:
-  explicit BoundJoinRef(JoinType join_type, std::unique_ptr<BoundTableRef> left, std::unique_ptr<BoundTableRef> right,
+class BoundJoinRef : public BoundTableRef
+{
+  public:
+  explicit BoundJoinRef(JoinType join_type, std::unique_ptr<BoundTableRef> left,
+                        std::unique_ptr<BoundTableRef> right,
                         std::unique_ptr<BoundExpression> condition)
       : BoundTableRef(TableReferenceType::JOIN),
         join_type_(join_type),
         left_(std::move(left)),
         right_(std::move(right)),
-        condition_(std::move(condition)) {}
+        condition_(std::move(condition))
+  {
+  }
 
-  auto ToString() const -> std::string override {
-    return fmt::format("BoundJoin {{ type={}, left={}, right={}, condition={} }}", join_type_, left_, right_,
-                       condition_);
+  auto ToString() const -> std::string override
+  {
+    return fmt::format(
+        "BoundJoin {{ type={}, left={}, right={}, condition={} }}", join_type_,
+        left_, right_, condition_);
   }
 
   /** Type of join. */
@@ -54,11 +63,14 @@ class BoundJoinRef : public BoundTableRef {
 }  // namespace bustub
 
 template <>
-struct fmt::formatter<bustub::JoinType> : formatter<string_view> {
+struct fmt::formatter<bustub::JoinType> : formatter<string_view>
+{
   template <typename FormatContext>
-  auto format(bustub::JoinType c, FormatContext &ctx) const {
+  auto format(bustub::JoinType c, FormatContext& ctx) const
+  {
     string_view name;
-    switch (c) {
+    switch (c)
+    {
       case bustub::JoinType::INVALID:
         name = "Invalid";
         break;

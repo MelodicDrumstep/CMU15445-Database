@@ -13,7 +13,8 @@
 /**
  * Directory page format:
  *  --------------------------------------------------------------------------------------
- * | MaxDepth (4) | GlobalDepth (4) | LocalDepths (512) | BucketPageIds(2048) | Free(1528)
+ * | MaxDepth (4) | GlobalDepth (4) | LocalDepths (512) | BucketPageIds(2048) |
+ * Free(1528)
  *  --------------------------------------------------------------------------------------
  */
 
@@ -27,23 +28,28 @@
 #include "common/config.h"
 #include "storage/index/generic_key.h"
 
-namespace bustub {
+namespace bustub
+{
 
-static constexpr uint64_t HTABLE_DIRECTORY_PAGE_METADATA_SIZE = sizeof(uint32_t) * 2;
+static constexpr uint64_t HTABLE_DIRECTORY_PAGE_METADATA_SIZE =
+    sizeof(uint32_t) * 2;
 
 /**
- * HTABLE_DIRECTORY_ARRAY_SIZE is the number of page_ids that can fit in the directory page of an extendible hash index.
- * This is 512 because the directory array must grow in powers of 2, and 1024 page_ids leaves zero room for
+ * HTABLE_DIRECTORY_ARRAY_SIZE is the number of page_ids that can fit in the
+ * directory page of an extendible hash index. This is 512 because the directory
+ * array must grow in powers of 2, and 1024 page_ids leaves zero room for
  * storage of the other member variables.
  */
 static constexpr uint64_t HTABLE_DIRECTORY_MAX_DEPTH = 9;
-static constexpr uint64_t HTABLE_DIRECTORY_ARRAY_SIZE = 1 << HTABLE_DIRECTORY_MAX_DEPTH;
+static constexpr uint64_t HTABLE_DIRECTORY_ARRAY_SIZE =
+    1 << HTABLE_DIRECTORY_MAX_DEPTH;
 
 /**
  * Directory Page for extendible hash table.
  */
-class ExtendibleHTableDirectoryPage {
- public:
+class ExtendibleHTableDirectoryPage
+{
+  public:
   // Delete all constructor / destructor to ensure memory safety
   ExtendibleHTableDirectoryPage() = delete;
   DISALLOW_COPY_AND_MOVE(ExtendibleHTableDirectoryPage);
@@ -99,7 +105,8 @@ class ExtendibleHTableDirectoryPage {
    * upwards.  For example, global depth 3 corresponds to 0x00000007 in a 32-bit
    * representation.
    *
-   * @return mask of global_depth 1's and the rest 0's (with 1's from LSB upwards)
+   * @return mask of global_depth 1's and the rest 0's (with 1's from LSB
+   * upwards)
    */
   auto GetGlobalDepthMask() const -> uint32_t;
 
@@ -189,7 +196,7 @@ class ExtendibleHTableDirectoryPage {
    */
   void PrintDirectory() const;
 
- private:
+  private:
   uint32_t max_depth_;
   uint32_t global_depth_;
   uint8_t local_depths_[HTABLE_DIRECTORY_ARRAY_SIZE];

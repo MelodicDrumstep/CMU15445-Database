@@ -21,25 +21,32 @@
 #include "container/hash/hash_function.h"
 #include "storage/index/index.h"
 
-namespace bustub {
+namespace bustub
+{
 
-#define HASH_TABLE_INDEX_TYPE ExtendibleHashTableIndex<KeyType, ValueType, KeyComparator>
+#define HASH_TABLE_INDEX_TYPE \
+  ExtendibleHashTableIndex<KeyType, ValueType, KeyComparator>
 
 template <typename KeyType, typename ValueType, typename KeyComparator>
-class ExtendibleHashTableIndex : public Index {
- public:
-  ExtendibleHashTableIndex(std::unique_ptr<IndexMetadata> &&metadata, BufferPoolManager *buffer_pool_manager,
-                           const HashFunction<KeyType> &hash_fn);
+class ExtendibleHashTableIndex : public Index
+{
+  public:
+  ExtendibleHashTableIndex(std::unique_ptr<IndexMetadata>&& metadata,
+                           BufferPoolManager* buffer_pool_manager,
+                           const HashFunction<KeyType>& hash_fn);
 
   ~ExtendibleHashTableIndex() override = default;
 
-  auto InsertEntry(const Tuple &key, RID rid, Transaction *transaction) -> bool override;
+  auto InsertEntry(const Tuple& key, RID rid, Transaction* transaction)
+      -> bool override;
 
-  void DeleteEntry(const Tuple &key, RID rid, Transaction *transaction) override;
+  void DeleteEntry(const Tuple& key, RID rid,
+                   Transaction* transaction) override;
 
-  void ScanKey(const Tuple &key, std::vector<RID> *result, Transaction *transaction) override;
+  void ScanKey(const Tuple& key, std::vector<RID>* result,
+               Transaction* transaction) override;
 
- protected:
+  protected:
   // comparator for key
   KeyComparator comparator_;
   // container
@@ -51,6 +58,7 @@ using IntegerKeyType = GenericKey<TWO_INTEGER_SIZE>;
 using IntegerValueType = RID;
 using IntegerComparatorType = GenericComparator<TWO_INTEGER_SIZE>;
 using HashTableIndexForTwoIntegerColumn =
-    ExtendibleHashTableIndex<IntegerKeyType, IntegerValueType, IntegerComparatorType>;
+    ExtendibleHashTableIndex<IntegerKeyType, IntegerValueType,
+                             IntegerComparatorType>;
 
 }  // namespace bustub

@@ -12,7 +12,8 @@
 
 #pragma once
 
-namespace bustub {
+namespace bustub
+{
 
 /**
  * HashComparator is for comparing hash_t, it returns:
@@ -20,9 +21,13 @@ namespace bustub {
  *  > 0 if lhs > rhs
  *  = 0 if lhs = rhs
  */
-class HashComparator {
- public:
-  inline auto operator()(const hash_t lhs, const hash_t rhs) -> int { return lhs < rhs ? -1 : (lhs > rhs ? 1 : 0); }
+class HashComparator
+{
+  public:
+  inline auto operator()(const hash_t lhs, const hash_t rhs) -> int
+  {
+    return lhs < rhs ? -1 : (lhs > rhs ? 1 : 0);
+  }
 };
 
 }  // namespace bustub

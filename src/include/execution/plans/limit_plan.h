@@ -18,20 +18,24 @@
 #include "execution/plans/abstract_plan.h"
 #include "fmt/format.h"
 
-namespace bustub {
+namespace bustub
+{
 
 /**
  * Limit constraints the number of output tuples produced by its child executor.
  */
-class LimitPlanNode : public AbstractPlanNode {
- public:
+class LimitPlanNode : public AbstractPlanNode
+{
+  public:
   /**
    * Construct a new LimitPlanNode instance.
    * @param child The child plan from which tuples are obtained
    * @param limit The number of output tuples
    */
   LimitPlanNode(SchemaRef output, AbstractPlanNodeRef child, std::size_t limit)
-      : AbstractPlanNode(std::move(output), {std::move(child)}), limit_{limit} {}
+      : AbstractPlanNode(std::move(output), {std::move(child)}), limit_{limit}
+  {
+  }
 
   /** @return The type of the plan node */
   auto GetType() const -> PlanType override { return PlanType::Limit; }
@@ -40,8 +44,10 @@ class LimitPlanNode : public AbstractPlanNode {
   auto GetLimit() const -> size_t { return limit_; }
 
   /** @return The child plan node */
-  auto GetChildPlan() const -> AbstractPlanNodeRef {
-    BUSTUB_ASSERT(GetChildren().size() == 1, "Limit should have at most one child plan.");
+  auto GetChildPlan() const -> AbstractPlanNodeRef
+  {
+    BUSTUB_ASSERT(GetChildren().size() == 1,
+                  "Limit should have at most one child plan.");
     return GetChildAt(0);
   }
 
@@ -50,7 +56,7 @@ class LimitPlanNode : public AbstractPlanNode {
   /** The limit */
   std::size_t limit_;
 
- protected:
+  protected:
   auto PlanNodeToString() const -> std::string override;
 };
 

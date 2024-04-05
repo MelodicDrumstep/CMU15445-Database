@@ -20,19 +20,23 @@
 
 #include "common/config.h"
 
-namespace bustub {
+namespace bustub
+{
 
 /**
- * DiskManager takes care of the allocation and deallocation of pages within a database. It performs the reading and
- * writing of pages to and from disk, providing a logical file layer within the context of a database management system.
+ * DiskManager takes care of the allocation and deallocation of pages within a
+ * database. It performs the reading and writing of pages to and from disk,
+ * providing a logical file layer within the context of a database management
+ * system.
  */
-class DiskManager {
- public:
+class DiskManager
+{
+  public:
   /**
    * Creates a new disk manager that writes to the specified database file.
    * @param db_file the file name of the database file to write to
    */
-  explicit DiskManager(const std::string &db_file);
+  explicit DiskManager(const std::string& db_file);
 
   /** FOR TEST / LEADERBOARD ONLY, used by DiskManagerMemory */
   DiskManager() = default;
@@ -49,21 +53,21 @@ class DiskManager {
    * @param page_id id of the page
    * @param page_data raw page data
    */
-  virtual void WritePage(page_id_t page_id, const char *page_data);
+  virtual void WritePage(page_id_t page_id, const char* page_data);
 
   /**
    * Read a page from the database file.
    * @param page_id id of the page
    * @param[out] page_data output buffer
    */
-  virtual void ReadPage(page_id_t page_id, char *page_data);
+  virtual void ReadPage(page_id_t page_id, char* page_data);
 
   /**
    * Flush the entire log buffer into disk.
    * @param log_data raw log data
    * @param size size of log entry
    */
-  void WriteLog(char *log_data, int size);
+  void WriteLog(char* log_data, int size);
 
   /**
    * Read a log entry from the log file.
@@ -72,7 +76,7 @@ class DiskManager {
    * @param offset offset of the log entry in the file
    * @return true if the read was successful, false otherwise
    */
-  auto ReadLog(char *log_data, int size, int offset) -> bool;
+  auto ReadLog(char* log_data, int size, int offset) -> bool;
 
   /** @return the number of disk flushes */
   auto GetNumFlushes() const -> int;
@@ -87,13 +91,13 @@ class DiskManager {
    * Sets the future which is used to check for non-blocking flushes.
    * @param f the non-blocking flush check
    */
-  inline void SetFlushLogFuture(std::future<void> *f) { flush_log_f_ = f; }
+  inline void SetFlushLogFuture(std::future<void>* f) { flush_log_f_ = f; }
 
   /** Checks if the non-blocking flush future was set. */
   inline auto HasFlushLogFuture() -> bool { return flush_log_f_ != nullptr; }
 
- protected:
-  auto GetFileSize(const std::string &file_name) -> int;
+  protected:
+  auto GetFileSize(const std::string& file_name) -> int;
   // stream to write log file
   std::fstream log_io_;
   std::string log_name_;
@@ -103,7 +107,7 @@ class DiskManager {
   int num_flushes_{0};
   int num_writes_{0};
   bool flush_log_{false};
-  std::future<void> *flush_log_f_{nullptr};
+  std::future<void>* flush_log_f_{nullptr};
   // With multiple buffer pool instances, need to protect file access
   std::mutex db_io_latch_;
 };

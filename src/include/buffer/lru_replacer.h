@@ -19,16 +19,19 @@
 #include "buffer/replacer.h"
 #include "common/config.h"
 
-namespace bustub {
+namespace bustub
+{
 
 /**
  * LRUReplacer implements the Least Recently Used replacement policy.
  */
-class LRUReplacer : public Replacer {
- public:
+class LRUReplacer : public Replacer
+{
+  public:
   /**
    * Create a new LRUReplacer.
-   * @param num_pages the maximum number of pages the LRUReplacer will be required to store
+   * @param num_pages the maximum number of pages the LRUReplacer will be
+   * required to store
    */
   explicit LRUReplacer(size_t num_pages);
 
@@ -37,7 +40,7 @@ class LRUReplacer : public Replacer {
    */
   ~LRUReplacer() override;
 
-  auto Victim(frame_id_t *frame_id) -> bool override;
+  auto Victim(frame_id_t* frame_id) -> bool override;
 
   void Pin(frame_id_t frame_id) override;
 
@@ -45,7 +48,7 @@ class LRUReplacer : public Replacer {
 
   auto Size() -> size_t override;
 
- private:
+  private:
   // TODO(student): implement me!
 };
 

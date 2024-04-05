@@ -2,20 +2,22 @@
 
 #include "storage/page/page.h"
 
-namespace bustub {
+namespace bustub
+{
 
 class BufferPoolManager;
 class ReadPageGuard;
 class WritePageGuard;
 
-class BasicPageGuard {
- public:
+class BasicPageGuard
+{
+  public:
   BasicPageGuard() = default;
 
-  BasicPageGuard(BufferPoolManager *bpm, Page *page) : bpm_(bpm), page_(page) {}
+  BasicPageGuard(BufferPoolManager* bpm, Page* page) : bpm_(bpm), page_(page) {}
 
-  BasicPageGuard(const BasicPageGuard &) = delete;
-  auto operator=(const BasicPageGuard &) -> BasicPageGuard & = delete;
+  BasicPageGuard(const BasicPageGuard&) = delete;
+  auto operator=(const BasicPageGuard&) -> BasicPageGuard& = delete;
 
   /** TODO(P1): Add implementation
    *
@@ -27,7 +29,7 @@ class BasicPageGuard {
    * example, it should not be possible to call .Drop() on both page
    * guards and have the pin count decrease by 2.
    */
-  BasicPageGuard(BasicPageGuard &&that) noexcept;
+  BasicPageGuard(BasicPageGuard&& that) noexcept;
 
   /** TODO(P1): Add implementation
    *
@@ -50,7 +52,7 @@ class BasicPageGuard {
    * a guard replaces its held page with a different one, given
    * the purpose of a page guard.
    */
-  auto operator=(BasicPageGuard &&that) noexcept -> BasicPageGuard &;
+  auto operator=(BasicPageGuard&& that) noexcept -> BasicPageGuard&;
 
   /** TODO(P1): Add implementation
    *
@@ -66,7 +68,8 @@ class BasicPageGuard {
    * @brief Upgrade a BasicPageGuard to a ReadPageGuard
    *
    * The protected page is not evicted from the buffer pool during the upgrade,
-   * and the basic page guard should be made invalid after calling this function.
+   * and the basic page guard should be made invalid after calling this
+   * function.
    *
    * @return an upgraded ReadPageGuard
    */
@@ -77,7 +80,8 @@ class BasicPageGuard {
    * @brief Upgrade a BasicPageGuard to a WritePageGuard
    *
    * The protected page is not evicted from the buffer pool during the upgrade,
-   * and the basic page guard should be made invalid after calling this function.
+   * and the basic page guard should be made invalid after calling this
+   * function.
    *
    * @return an upgraded WritePageGuard
    */
@@ -85,38 +89,42 @@ class BasicPageGuard {
 
   auto PageId() -> page_id_t { return page_->GetPageId(); }
 
-  auto GetData() -> const char * { return page_->GetData(); }
+  auto GetData() -> const char* { return page_->GetData(); }
 
   template <class T>
-  auto As() -> const T * {
-    return reinterpret_cast<const T *>(GetData());
+  auto As() -> const T*
+  {
+    return reinterpret_cast<const T*>(GetData());
   }
 
-  auto GetDataMut() -> char * {
+  auto GetDataMut() -> char*
+  {
     is_dirty_ = true;
     return page_->GetData();
   }
 
   template <class T>
-  auto AsMut() -> T * {
-    return reinterpret_cast<T *>(GetDataMut());
+  auto AsMut() -> T*
+  {
+    return reinterpret_cast<T*>(GetDataMut());
   }
 
- private:
+  private:
   friend class ReadPageGuard;
   friend class WritePageGuard;
 
-  BufferPoolManager *bpm_{nullptr};
-  Page *page_{nullptr};
+  BufferPoolManager* bpm_{nullptr};
+  Page* page_{nullptr};
   bool is_dirty_{false};
 };
 
-class ReadPageGuard {
- public:
+class ReadPageGuard
+{
+  public:
   ReadPageGuard() = default;
-  ReadPageGuard(BufferPoolManager *bpm, Page *page);
-  ReadPageGuard(const ReadPageGuard &) = delete;
-  auto operator=(const ReadPageGuard &) -> ReadPageGuard & = delete;
+  ReadPageGuard(BufferPoolManager* bpm, Page* page);
+  ReadPageGuard(const ReadPageGuard&) = delete;
+  auto operator=(const ReadPageGuard&) -> ReadPageGuard& = delete;
 
   /** TODO(P1): Add implementation
    *
@@ -126,7 +134,7 @@ class ReadPageGuard {
    * a ReadPageGuard using another ReadPageGuard. Think
    * about if there's any way you can make this easier for yourself...
    */
-  ReadPageGuard(ReadPageGuard &&that) noexcept;
+  ReadPageGuard(ReadPageGuard&& that) noexcept;
 
   /** TODO(P1): Add implementation
    *
@@ -135,7 +143,7 @@ class ReadPageGuard {
    * Very similar to BasicPageGuard. Given another ReadPageGuard,
    * replace the contents of this one with that one.
    */
-  auto operator=(ReadPageGuard &&that) noexcept -> ReadPageGuard &;
+  auto operator=(ReadPageGuard&& that) noexcept -> ReadPageGuard&;
 
   /** TODO(P1): Add implementation
    *
@@ -159,26 +167,27 @@ class ReadPageGuard {
 
   auto PageId() -> page_id_t { return guard_.PageId(); }
 
-  auto GetData() -> const char * { return guard_.GetData(); }
+  auto GetData() -> const char* { return guard_.GetData(); }
 
   template <class T>
-  auto As() -> const T * {
+  auto As() -> const T*
+  {
     return guard_.As<T>();
   }
 
- private:
+  private:
   // You may choose to get rid of this and add your own private variables.
   BasicPageGuard guard_;
-  std::mutex read_lock;
+  bool unlock_guard{false};
 };
 
-class WritePageGuard {
- public:
-
+class WritePageGuard
+{
+  public:
   WritePageGuard() = default;
-  WritePageGuard(BufferPoolManager *bpm, Page *page);
-  WritePageGuard(const WritePageGuard &) = delete;
-  auto operator=(const WritePageGuard &) -> WritePageGuard & = delete;
+  WritePageGuard(BufferPoolManager* bpm, Page* page);
+  WritePageGuard(const WritePageGuard&) = delete;
+  auto operator=(const WritePageGuard&) -> WritePageGuard& = delete;
 
   /** TODO(P1): Add implementation
    *
@@ -188,7 +197,7 @@ class WritePageGuard {
    * a WritePageGuard using another WritePageGuard. Think
    * about if there's any way you can make this easier for yourself...
    */
-  WritePageGuard(WritePageGuard &&that) noexcept;
+  WritePageGuard(WritePageGuard&& that) noexcept;
 
   /** TODO(P1): Add implementation
    *
@@ -197,7 +206,7 @@ class WritePageGuard {
    * Very similar to BasicPageGuard. Given another WritePageGuard,
    * replace the contents of this one with that one.
    */
-  auto operator=(WritePageGuard &&that) noexcept -> WritePageGuard &;
+  auto operator=(WritePageGuard&& that) noexcept -> WritePageGuard&;
 
   /** TODO(P1): Add implementation
    *
@@ -221,24 +230,26 @@ class WritePageGuard {
 
   auto PageId() -> page_id_t { return guard_.PageId(); }
 
-  auto GetData() -> const char * { return guard_.GetData(); }
+  auto GetData() -> const char* { return guard_.GetData(); }
 
   template <class T>
-  auto As() -> const T * {
+  auto As() -> const T*
+  {
     return guard_.As<T>();
   }
 
-  auto GetDataMut() -> char * { return guard_.GetDataMut(); }
+  auto GetDataMut() -> char* { return guard_.GetDataMut(); }
 
   template <class T>
-  auto AsMut() -> T * {
+  auto AsMut() -> T*
+  {
     return guard_.AsMut<T>();
   }
 
- private:
+  private:
   // You may choose to get rid of this and add your own private variables.
   BasicPageGuard guard_;
-  std::mutex write_lock;
+  bool unlock_guard{false};
 };
 
 }  // namespace bustub

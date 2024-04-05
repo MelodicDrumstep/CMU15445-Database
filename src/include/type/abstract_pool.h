@@ -14,11 +14,13 @@
 
 #include <cstdlib>
 
-namespace bustub {
+namespace bustub
+{
 
 // Interface of a memory pool that can quickly allocate chunks of memory
-class AbstractPool {
- public:
+class AbstractPool
+{
+  public:
   // Virtual destructor
   virtual ~AbstractPool() = default;
 
@@ -30,12 +32,12 @@ class AbstractPool {
    *
    * TODO: Provide good error codes for failure cases
    */
-  virtual auto Allocate(size_t size) -> void * = 0;
+  virtual auto Allocate(size_t size) -> void* = 0;
 
   /**
    * @brief Returns the provided chunk of memory back into the pool
    */
-  virtual void Free(void *ptr) = 0;
+  virtual void Free(void* ptr) = 0;
 };
 
 }  // namespace bustub

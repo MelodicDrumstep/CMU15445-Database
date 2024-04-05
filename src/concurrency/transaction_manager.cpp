@@ -33,13 +33,15 @@
 #include "type/value.h"
 #include "type/value_factory.h"
 
-namespace bustub {
+namespace bustub
+{
 
-auto TransactionManager::Begin(IsolationLevel isolation_level) -> Transaction * {
+auto TransactionManager::Begin(IsolationLevel isolation_level) -> Transaction*
+{
   std::unique_lock<std::shared_mutex> l(txn_map_mutex_);
   auto txn_id = next_txn_id_++;
   auto txn = std::make_unique<Transaction>(txn_id, isolation_level);
-  auto *txn_ref = txn.get();
+  auto* txn_ref = txn.get();
   txn_map_.insert(std::make_pair(txn_id, std::move(txn)));
 
   // TODO(fall2023): set the timestamps here. Watermark updated below.
@@ -48,19 +50,23 @@ auto TransactionManager::Begin(IsolationLevel isolation_level) -> Transaction * 
   return txn_ref;
 }
 
-auto TransactionManager::VerifyTxn(Transaction *txn) -> bool { return true; }
+auto TransactionManager::VerifyTxn(Transaction* txn) -> bool { return true; }
 
-auto TransactionManager::Commit(Transaction *txn) -> bool {
+auto TransactionManager::Commit(Transaction* txn) -> bool
+{
   std::unique_lock<std::mutex> commit_lck(commit_mutex_);
 
   // TODO(fall2023): acquire commit ts!
 
-  if (txn->state_ != TransactionState::RUNNING) {
+  if (txn->state_ != TransactionState::RUNNING)
+  {
     throw Exception("txn not in running state");
   }
 
-  if (txn->GetIsolationLevel() == IsolationLevel::SERIALIZABLE) {
-    if (!VerifyTxn(txn)) {
+  if (txn->GetIsolationLevel() == IsolationLevel::SERIALIZABLE)
+  {
+    if (!VerifyTxn(txn))
+    {
       commit_lck.unlock();
       Abort(txn);
       return false;
@@ -71,7 +77,8 @@ auto TransactionManager::Commit(Transaction *txn) -> bool {
 
   std::unique_lock<std::shared_mutex> lck(txn_map_mutex_);
 
-  // TODO(fall2023): set commit timestamp + update last committed timestamp here.
+  // TODO(fall2023): set commit timestamp + update last committed timestamp
+  // here.
 
   txn->state_ = TransactionState::COMMITTED;
   running_txns_.UpdateCommitTs(txn->commit_ts_);
@@ -80,8 +87,11 @@ auto TransactionManager::Commit(Transaction *txn) -> bool {
   return true;
 }
 
-void TransactionManager::Abort(Transaction *txn) {
-  if (txn->state_ != TransactionState::RUNNING && txn->state_ != TransactionState::TAINTED) {
+void TransactionManager::Abort(Transaction* txn)
+{
+  if (txn->state_ != TransactionState::RUNNING &&
+      txn->state_ != TransactionState::TAINTED)
+  {
     throw Exception("txn not in running / tainted state");
   }
 
@@ -92,6 +102,9 @@ void TransactionManager::Abort(Transaction *txn) {
   running_txns_.RemoveTxn(txn->read_ts_);
 }
 
-void TransactionManager::GarbageCollection() { UNIMPLEMENTED("not implemented"); }
+void TransactionManager::GarbageCollection()
+{
+  UNIMPLEMENTED("not implemented");
+}
 
 }  // namespace bustub

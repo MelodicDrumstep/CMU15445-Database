@@ -8,8 +8,9 @@
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
 
-// The above copyright notice and this permission notice (including the next paragraph)
-// shall be included in all copies or substantial portions of the Software.
+// The above copyright notice and this permission notice (including the next
+// paragraph) shall be included in all copies or substantial portions of the
+// Software.
 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -23,10 +24,13 @@
 #include "binder/binder.h"
 #include "binder/expressions/bound_window.h"
 
-namespace bustub {
+namespace bustub
+{
 
-auto Binder::NodeTagToString(duckdb_libpgquery::PGNodeTag type) -> std::string {
-  switch (type) {
+auto Binder::NodeTagToString(duckdb_libpgquery::PGNodeTag type) -> std::string
+{
+  switch (type)
+  {
     case duckdb_libpgquery::T_PGInvalid:
       return "T_Invalid";
     case duckdb_libpgquery::T_PGIndexInfo:
@@ -840,8 +844,10 @@ auto Binder::NodeTagToString(duckdb_libpgquery::PGNodeTag type) -> std::string {
   }
 }  // LCOV_EXCL_STOP
 
-auto Binder::WindowBoundaryToString(WindowBoundary wb) -> std::string {
-  switch (wb) {
+auto Binder::WindowBoundaryToString(WindowBoundary wb) -> std::string
+{
+  switch (wb)
+  {
     case WindowBoundary::INVALID:
       return "INVALID";
     case WindowBoundary::UNBOUNDED_PRECEDING:

@@ -27,41 +27,61 @@
 #include "type/type_id.h"
 #include "type/value_factory.h"
 
-namespace bustub {
+namespace bustub
+{
 
-/** ArithmeticType represents the type of logic operation that we want to perform. */
-enum class LogicType { And, Or };
+/** ArithmeticType represents the type of logic operation that we want to
+ * perform. */
+enum class LogicType
+{
+  And,
+  Or
+};
 
 /**
  * LogicExpression represents two expressions being computed.
  */
-class LogicExpression : public AbstractExpression {
- public:
-  /** Creates a new comparison expression representing (left comp_type right). */
-  LogicExpression(AbstractExpressionRef left, AbstractExpressionRef right, LogicType logic_type)
-      : AbstractExpression({std::move(left), std::move(right)}, Column{"<val>", TypeId::BOOLEAN}),
-        logic_type_{logic_type} {
+class LogicExpression : public AbstractExpression
+{
+  public:
+  /** Creates a new comparison expression representing (left comp_type right).
+   */
+  LogicExpression(AbstractExpressionRef left, AbstractExpressionRef right,
+                  LogicType logic_type)
+      : AbstractExpression({std::move(left), std::move(right)},
+                           Column{"<val>", TypeId::BOOLEAN}),
+        logic_type_{logic_type}
+  {
     if (GetChildAt(0)->GetReturnType().GetType() != TypeId::BOOLEAN ||
-        GetChildAt(1)->GetReturnType().GetType() != TypeId::BOOLEAN) {
+        GetChildAt(1)->GetReturnType().GetType() != TypeId::BOOLEAN)
+    {
       throw bustub::NotImplementedException("expect boolean from either side");
     }
   }
 
-  auto Evaluate(const Tuple *tuple, const Schema &schema) const -> Value override {
+  auto Evaluate(const Tuple* tuple, const Schema& schema) const
+      -> Value override
+  {
     Value lhs = GetChildAt(0)->Evaluate(tuple, schema);
     Value rhs = GetChildAt(1)->Evaluate(tuple, schema);
     return ValueFactory::GetBooleanValue(PerformComputation(lhs, rhs));
   }
 
-  auto EvaluateJoin(const Tuple *left_tuple, const Schema &left_schema, const Tuple *right_tuple,
-                    const Schema &right_schema) const -> Value override {
-    Value lhs = GetChildAt(0)->EvaluateJoin(left_tuple, left_schema, right_tuple, right_schema);
-    Value rhs = GetChildAt(1)->EvaluateJoin(left_tuple, left_schema, right_tuple, right_schema);
+  auto EvaluateJoin(const Tuple* left_tuple, const Schema& left_schema,
+                    const Tuple* right_tuple, const Schema& right_schema) const
+      -> Value override
+  {
+    Value lhs = GetChildAt(0)->EvaluateJoin(left_tuple, left_schema,
+                                            right_tuple, right_schema);
+    Value rhs = GetChildAt(1)->EvaluateJoin(left_tuple, left_schema,
+                                            right_tuple, right_schema);
     return ValueFactory::GetBooleanValue(PerformComputation(lhs, rhs));
   }
 
-  /** @return the string representation of the expression node and its children */
-  auto ToString() const -> std::string override {
+  /** @return the string representation of the expression node and its children
+   */
+  auto ToString() const -> std::string override
+  {
     return fmt::format("({}{}{})", *GetChildAt(0), logic_type_, *GetChildAt(1));
   }
 
@@ -69,34 +89,43 @@ class LogicExpression : public AbstractExpression {
 
   LogicType logic_type_;
 
- private:
-  auto GetBoolAsCmpBool(const Value &val) const -> CmpBool {
-    if (val.IsNull()) {
+  private:
+  auto GetBoolAsCmpBool(const Value& val) const -> CmpBool
+  {
+    if (val.IsNull())
+    {
       return CmpBool::CmpNull;
     }
-    if (val.GetAs<bool>()) {
+    if (val.GetAs<bool>())
+    {
       return CmpBool::CmpTrue;
     }
     return CmpBool::CmpFalse;
   }
 
-  auto PerformComputation(const Value &lhs, const Value &rhs) const -> CmpBool {
+  auto PerformComputation(const Value& lhs, const Value& rhs) const -> CmpBool
+  {
     auto l = GetBoolAsCmpBool(lhs);
     auto r = GetBoolAsCmpBool(rhs);
-    switch (logic_type_) {
+    switch (logic_type_)
+    {
       case LogicType::And:
-        if (l == CmpBool::CmpFalse || r == CmpBool::CmpFalse) {
+        if (l == CmpBool::CmpFalse || r == CmpBool::CmpFalse)
+        {
           return CmpBool::CmpFalse;
         }
-        if (l == CmpBool::CmpTrue && r == CmpBool::CmpTrue) {
+        if (l == CmpBool::CmpTrue && r == CmpBool::CmpTrue)
+        {
           return CmpBool::CmpTrue;
         }
         return CmpBool::CmpNull;
       case LogicType::Or:
-        if (l == CmpBool::CmpFalse && r == CmpBool::CmpFalse) {
+        if (l == CmpBool::CmpFalse && r == CmpBool::CmpFalse)
+        {
           return CmpBool::CmpFalse;
         }
-        if (l == CmpBool::CmpTrue || r == CmpBool::CmpTrue) {
+        if (l == CmpBool::CmpTrue || r == CmpBool::CmpTrue)
+        {
           return CmpBool::CmpTrue;
         }
         return CmpBool::CmpNull;
@@ -108,11 +137,14 @@ class LogicExpression : public AbstractExpression {
 }  // namespace bustub
 
 template <>
-struct fmt::formatter<bustub::LogicType> : formatter<string_view> {
+struct fmt::formatter<bustub::LogicType> : formatter<string_view>
+{
   template <typename FormatContext>
-  auto format(bustub::LogicType c, FormatContext &ctx) const {
+  auto format(bustub::LogicType c, FormatContext& ctx) const
+  {
     string_view name;
-    switch (c) {
+    switch (c)
+    {
       case bustub::LogicType::And:
         name = "and";
         break;

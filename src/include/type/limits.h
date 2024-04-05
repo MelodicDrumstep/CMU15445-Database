@@ -17,7 +17,8 @@
 #include <cstdint>
 #include <limits>
 
-namespace bustub {
+namespace bustub
+{
 
 static constexpr double DBL_LOWEST = std::numeric_limits<double>::lowest();
 static constexpr double FLT_LOWEST = std::numeric_limits<float>::lowest();

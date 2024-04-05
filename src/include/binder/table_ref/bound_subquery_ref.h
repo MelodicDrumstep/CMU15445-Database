@@ -9,21 +9,27 @@
 #include "binder/bound_table_ref.h"
 #include "fmt/format.h"
 
-namespace bustub {
+namespace bustub
+{
 
 class SelectStatement;
 
 /**
- * A subquery. e.g., `SELECT * FROM (SELECT * FROM t1)`, where `(SELECT * FROM t1)` is `BoundSubqueryRef`.
+ * A subquery. e.g., `SELECT * FROM (SELECT * FROM t1)`, where `(SELECT * FROM
+ * t1)` is `BoundSubqueryRef`.
  */
-class BoundSubqueryRef : public BoundTableRef {
- public:
-  explicit BoundSubqueryRef(std::unique_ptr<SelectStatement> subquery,
-                            std::vector<std::vector<std::string>> select_list_name, std::string alias)
+class BoundSubqueryRef : public BoundTableRef
+{
+  public:
+  explicit BoundSubqueryRef(
+      std::unique_ptr<SelectStatement> subquery,
+      std::vector<std::vector<std::string>> select_list_name, std::string alias)
       : BoundTableRef(TableReferenceType::SUBQUERY),
         subquery_(std::move(subquery)),
         select_list_name_(std::move(select_list_name)),
-        alias_(std::move(alias)) {}
+        alias_(std::move(alias))
+  {
+  }
 
   auto ToString() const -> std::string override;
 

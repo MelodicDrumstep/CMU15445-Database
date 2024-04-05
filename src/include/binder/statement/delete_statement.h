@@ -15,11 +15,14 @@
 #include "binder/table_ref/bound_base_table_ref.h"
 #include "catalog/column.h"
 
-namespace bustub {
+namespace bustub
+{
 
-class DeleteStatement : public BoundStatement {
- public:
-  explicit DeleteStatement(std::unique_ptr<BoundBaseTableRef> table, std::unique_ptr<BoundExpression> expr);
+class DeleteStatement : public BoundStatement
+{
+  public:
+  explicit DeleteStatement(std::unique_ptr<BoundBaseTableRef> table,
+                           std::unique_ptr<BoundExpression> expr);
 
   std::unique_ptr<BoundBaseTableRef> table_;
 

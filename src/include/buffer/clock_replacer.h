@@ -19,16 +19,20 @@
 #include "buffer/replacer.h"
 #include "common/config.h"
 
-namespace bustub {
+namespace bustub
+{
 
 /**
- * ClockReplacer implements the clock replacement policy, which approximates the Least Recently Used policy.
+ * ClockReplacer implements the clock replacement policy, which approximates the
+ * Least Recently Used policy.
  */
-class ClockReplacer : public Replacer {
- public:
+class ClockReplacer : public Replacer
+{
+  public:
   /**
    * Create a new ClockReplacer.
-   * @param num_pages the maximum number of pages the ClockReplacer will be required to store
+   * @param num_pages the maximum number of pages the ClockReplacer will be
+   * required to store
    */
   explicit ClockReplacer(size_t num_pages);
 
@@ -37,7 +41,7 @@ class ClockReplacer : public Replacer {
    */
   ~ClockReplacer() override;
 
-  auto Victim(frame_id_t *frame_id) -> bool override;
+  auto Victim(frame_id_t* frame_id) -> bool override;
 
   void Pin(frame_id_t frame_id) override;
 
@@ -45,7 +49,7 @@ class ClockReplacer : public Replacer {
 
   auto Size() -> size_t override;
 
- private:
+  private:
   // TODO(student): implement me!
 };
 

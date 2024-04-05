@@ -21,12 +21,15 @@
 #include "execution/expressions/constant_value_expression.h"
 #include "execution/plans/abstract_plan.h"
 
-namespace bustub {
+namespace bustub
+{
 /**
- * IndexScanPlanNode identifies a table that should be scanned with an optional predicate.
+ * IndexScanPlanNode identifies a table that should be scanned with an optional
+ * predicate.
  */
-class IndexScanPlanNode : public AbstractPlanNode {
- public:
+class IndexScanPlanNode : public AbstractPlanNode
+{
+  public:
   /**
    * Creates a new index scan plan node with filter predicate.
    * @param output The output format of this scan plan node
@@ -34,13 +37,17 @@ class IndexScanPlanNode : public AbstractPlanNode {
    * @param filter_predicate The predicate pushed down to index scan.
    * @param pred_key The key for point lookup
    */
-  IndexScanPlanNode(SchemaRef output, table_oid_t table_oid, index_oid_t index_oid,
-                    AbstractExpressionRef filter_predicate = nullptr, ConstantValueExpression *pred_key = nullptr)
+  IndexScanPlanNode(SchemaRef output, table_oid_t table_oid,
+                    index_oid_t index_oid,
+                    AbstractExpressionRef filter_predicate = nullptr,
+                    ConstantValueExpression* pred_key = nullptr)
       : AbstractPlanNode(std::move(output), {}),
         table_oid_(table_oid),
         index_oid_(index_oid),
         filter_predicate_(std::move(filter_predicate)),
-        pred_key_(pred_key) {}
+        pred_key_(pred_key)
+  {
+  }
 
   auto GetType() const -> PlanType override { return PlanType::IndexScan; }
 
@@ -63,16 +70,20 @@ class IndexScanPlanNode : public AbstractPlanNode {
 
   /**
    * The constant value key to lookup.
-   * For example when dealing "WHERE v = 1" we could store the constant value 1 here
+   * For example when dealing "WHERE v = 1" we could store the constant value 1
+   * here
    */
-  const ConstantValueExpression *pred_key_;
+  const ConstantValueExpression* pred_key_;
 
   // Add anything you want here for index lookup
 
- protected:
-  auto PlanNodeToString() const -> std::string override {
-    if (filter_predicate_) {
-      return fmt::format("IndexScan {{ index_oid={}, filter={} }}", index_oid_, filter_predicate_);
+  protected:
+  auto PlanNodeToString() const -> std::string override
+  {
+    if (filter_predicate_)
+    {
+      return fmt::format("IndexScan {{ index_oid={}, filter={} }}", index_oid_,
+                         filter_predicate_);
     }
     return fmt::format("IndexScan {{ index_oid={} }}", index_oid_);
   }

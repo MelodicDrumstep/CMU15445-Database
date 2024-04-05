@@ -21,22 +21,24 @@
 #include "execution/plans/mock_scan_plan.h"
 #include "storage/table/tuple.h"
 
-namespace bustub {
+namespace bustub
+{
 
-extern const char *mock_table_list[];
-auto GetMockTableSchemaOf(const std::string &table) -> Schema;
+extern const char* mock_table_list[];
+auto GetMockTableSchemaOf(const std::string& table) -> Schema;
 
 /**
  * The MockScanExecutor executor executes a sequential table scan for tests.
  */
-class MockScanExecutor : public AbstractExecutor {
- public:
+class MockScanExecutor : public AbstractExecutor
+{
+  public:
   /**
    * Construct a new MockScanExecutor instance.
    * @param exec_ctx The executor context
    * @param plan The mock scan plan to be executed
    */
-  MockScanExecutor(ExecutorContext *exec_ctx, const MockScanPlanNode *plan);
+  MockScanExecutor(ExecutorContext* exec_ctx, const MockScanPlanNode* plan);
 
   /** Initialize the mock scan. */
   void Init() override;
@@ -47,12 +49,15 @@ class MockScanExecutor : public AbstractExecutor {
    * @param[out] rid The next tuple RID produced by the scan
    * @return `true` if a tuple was produced, `false` if there are no more tuples
    */
-  auto Next(Tuple *tuple, RID *rid) -> bool override;
+  auto Next(Tuple* tuple, RID* rid) -> bool override;
 
   /** @return The output schema for the sequential scan */
-  auto GetOutputSchema() const -> const Schema & override { return plan_->OutputSchema(); }
+  auto GetOutputSchema() const -> const Schema& override
+  {
+    return plan_->OutputSchema();
+  }
 
- private:
+  private:
   /** @return A dummy tuple according to the output schema */
   auto MakeDummyTuple() const -> Tuple;
 
@@ -66,7 +71,7 @@ class MockScanExecutor : public AbstractExecutor {
   constexpr static const bool EXECUTOR_EXHAUSTED{false};
 
   /** The plan node for the scan */
-  const MockScanPlanNode *plan_;
+  const MockScanPlanNode* plan_;
 
   /** The cursor for the current mock scan */
   std::size_t cursor_{0};

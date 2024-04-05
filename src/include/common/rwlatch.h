@@ -17,13 +17,15 @@
 
 #include "common/macros.h"
 
-namespace bustub {
+namespace bustub
+{
 
 /**
  * Reader-Writer latch backed by std::mutex.
  */
-class ReaderWriterLatch {
- public:
+class ReaderWriterLatch
+{
+  public:
   /**
    * Acquire a write latch.
    */
@@ -44,7 +46,7 @@ class ReaderWriterLatch {
    */
   void RUnlock() { mutex_.unlock_shared(); }
 
- private:
+  private:
   std::shared_mutex mutex_;
 };
 

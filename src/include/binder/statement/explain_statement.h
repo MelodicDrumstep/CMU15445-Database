@@ -10,9 +10,11 @@
 #include <memory>
 #include <string>
 #include <vector>
+
 #include "binder/bound_statement.h"
 
-enum ExplainOptions : uint8_t {
+enum ExplainOptions : uint8_t
+{
   INVALID = 0,   /**< Default explain mode */
   BINDER = 1,    /**< Show binder results. */
   PLANNER = 2,   /**< Show planner results. */
@@ -20,11 +22,14 @@ enum ExplainOptions : uint8_t {
   SCHEMA = 8,    /**< Show schema. */
 };
 
-namespace bustub {
+namespace bustub
+{
 
-class ExplainStatement : public BoundStatement {
- public:
-  explicit ExplainStatement(std::unique_ptr<BoundStatement> statement, uint8_t options);
+class ExplainStatement : public BoundStatement
+{
+  public:
+  explicit ExplainStatement(std::unique_ptr<BoundStatement> statement,
+                            uint8_t options);
 
   std::unique_ptr<BoundStatement> statement_;
 

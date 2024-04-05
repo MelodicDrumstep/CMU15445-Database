@@ -3,30 +3,42 @@
 #include <algorithm>
 #include <random>
 #include <vector>
+
 #include "common/config.h"
 
-namespace bustub {
+namespace bustub
+{
 
 template <typename CppType>
-auto TableGenerator::GenNumericValues(ColumnInsertMeta *col_meta, uint32_t count) -> std::vector<Value> {
+auto TableGenerator::GenNumericValues(ColumnInsertMeta* col_meta,
+                                      uint32_t count) -> std::vector<Value>
+{
   std::vector<Value> values{};
   values.reserve(count);
 
   // Handle serial columns
-  if (col_meta->dist_ == Dist::Serial) {
-    for (uint32_t i = 0; i < count; i++) {
-      values.emplace_back(Value(col_meta->type_, static_cast<CppType>(col_meta->serial_counter_ + col_meta->min_)));
+  if (col_meta->dist_ == Dist::Serial)
+  {
+    for (uint32_t i = 0; i < count; i++)
+    {
+      values.emplace_back(Value(
+          col_meta->type_,
+          static_cast<CppType>(col_meta->serial_counter_ + col_meta->min_)));
       col_meta->serial_counter_ += 1;
     }
     return values;
   }
 
   // Handle cyclic columns
-  if (col_meta->dist_ == Dist::Cyclic) {
-    for (uint32_t i = 0; i < count; i++) {
-      values.emplace_back(Value(col_meta->type_, static_cast<CppType>(col_meta->serial_counter_)));
+  if (col_meta->dist_ == Dist::Cyclic)
+  {
+    for (uint32_t i = 0; i < count; i++)
+    {
+      values.emplace_back(Value(
+          col_meta->type_, static_cast<CppType>(col_meta->serial_counter_)));
       col_meta->serial_counter_ += 1;
-      if (col_meta->serial_counter_ > col_meta->max_) {
+      if (col_meta->serial_counter_ > col_meta->max_)
+      {
         col_meta->serial_counter_ = 0;
       }
     }
@@ -35,18 +47,24 @@ auto TableGenerator::GenNumericValues(ColumnInsertMeta *col_meta, uint32_t count
 
   std::default_random_engine generator;
   // TODO(Amadou): Break up in two branches if this is too weird.
-  std::conditional_t<std::is_integral_v<CppType>, std::uniform_int_distribution<CppType>,
+  std::conditional_t<std::is_integral_v<CppType>,
+                     std::uniform_int_distribution<CppType>,
                      std::uniform_real_distribution<CppType>>
-      distribution(static_cast<CppType>(col_meta->min_), static_cast<CppType>(col_meta->max_));
-  for (uint32_t i = 0; i < count; i++) {
+      distribution(static_cast<CppType>(col_meta->min_),
+                   static_cast<CppType>(col_meta->max_));
+  for (uint32_t i = 0; i < count; i++)
+  {
     values.emplace_back(Value(col_meta->type_, distribution(generator)));
   }
   return values;
 }
 
-auto TableGenerator::MakeValues(ColumnInsertMeta *col_meta, uint32_t count) -> std::vector<Value> {
+auto TableGenerator::MakeValues(ColumnInsertMeta* col_meta, uint32_t count)
+    -> std::vector<Value>
+{
   std::vector<Value> values;
-  switch (col_meta->type_) {
+  switch (col_meta->type_)
+  {
     case TypeId::TINYINT:
       return GenNumericValues<int8_t>(col_meta, count);
     case TypeId::SMALLINT:
@@ -62,43 +80,56 @@ auto TableGenerator::MakeValues(ColumnInsertMeta *col_meta, uint32_t count) -> s
   }
 }
 
-void TableGenerator::FillTable(TableInfo *info, TableInsertMeta *table_meta) {
+void TableGenerator::FillTable(TableInfo* info, TableInsertMeta* table_meta)
+{
   uint32_t num_inserted = 0;
   uint32_t batch_size = 128;
-  while (num_inserted < table_meta->num_rows_) {
+  while (num_inserted < table_meta->num_rows_)
+  {
     std::vector<std::vector<Value>> values;
-    uint32_t num_values = std::min(batch_size, table_meta->num_rows_ - num_inserted);
-    for (auto &col_meta : table_meta->col_meta_) {
+    uint32_t num_values =
+        std::min(batch_size, table_meta->num_rows_ - num_inserted);
+    for (auto& col_meta : table_meta->col_meta_)
+    {
       values.emplace_back(MakeValues(&col_meta, num_values));
     }
-    for (uint32_t i = 0; i < num_values; i++) {
+    for (uint32_t i = 0; i < num_values; i++)
+    {
       std::vector<Value> entry;
       entry.reserve(values.size());
-      for (const auto &col : values) {
+      for (const auto& col : values)
+      {
         entry.emplace_back(col[i]);
       }
-      auto rid = info->table_->InsertTuple(TupleMeta{0, false}, Tuple(entry, &info->schema_));
+      auto rid = info->table_->InsertTuple(TupleMeta{0, false},
+                                           Tuple(entry, &info->schema_));
       BUSTUB_ENSURE(rid != std::nullopt, "Sequential insertion cannot fail");
       num_inserted++;
     }
   }
 }
 
-void TableGenerator::GenerateTestTables() {
+void TableGenerator::GenerateTestTables()
+{
   /**
    * This array configures each of the test tables. Each table is configured
-   * with a name, size, and schema. We also configure the columns of the table. If
-   * you add a new table, set it up here.
+   * with a name, size, and schema. We also configure the columns of the table.
+   * If you add a new table, set it up here.
    */
   std::vector<TableInsertMeta> insert_meta{
       // The empty table
-      {"empty_table", 0, {{"colA", TypeId::INTEGER, false, Dist::Serial, 0, 0}}},
+      {"empty_table",
+       0,
+       {{"colA", TypeId::INTEGER, false, Dist::Serial, 0, 0}}},
 
-      {"test_simple_seq_1", 10, {{"col1", TypeId::INTEGER, false, Dist::Serial, 0, 10}}},
+      {"test_simple_seq_1",
+       10,
+       {{"col1", TypeId::INTEGER, false, Dist::Serial, 0, 10}}},
 
       {"test_simple_seq_2",
        10,
-       {{"col1", TypeId::INTEGER, false, Dist::Serial, 0, 10}, {"col2", TypeId::INTEGER, false, Dist::Serial, 10, 20}}},
+       {{"col1", TypeId::INTEGER, false, Dist::Serial, 0, 10},
+        {"col2", TypeId::INTEGER, false, Dist::Serial, 10, 20}}},
 
       // Table 1
       {"test_1",
@@ -118,7 +149,8 @@ void TableGenerator::GenerateTestTables() {
       // // Table 3
       // {"test_3",
       //  TEST3_SIZE,
-      //  {{"colA", TypeId::INTEGER, false, Dist::Serial, 0, 0}, {"colB", TypeId::INTEGER, true, Dist::Serial, 0, 0}}},
+      //  {{"colA", TypeId::INTEGER, false, Dist::Serial, 0, 0}, {"colB",
+      //  TypeId::INTEGER, true, Dist::Serial, 0, 0}}},
 
       // // Table 4
       // {"test_4",
@@ -130,7 +162,8 @@ void TableGenerator::GenerateTestTables() {
       // // Table 5
       // {"test_5",
       //  0,
-      //  {{"colA", TypeId::BIGINT, false, Dist::Serial, 0, 0}, {"colB", TypeId::INTEGER, true, Dist::Serial, 0, 0}}},
+      //  {{"colA", TypeId::BIGINT, false, Dist::Serial, 0, 0}, {"colB",
+      //  TypeId::INTEGER, true, Dist::Serial, 0, 0}}},
 
       // // Table 6
       // {"test_6",
@@ -150,38 +183,48 @@ void TableGenerator::GenerateTestTables() {
       // // Table 8
       // {"test_8",
       //  TEST8_SIZE,
-      //  {{"colA", TypeId::BIGINT, false, Dist::Serial, 0, 0}, {"colB", TypeId::INTEGER, true, Dist::Serial, 0, 0}}},
+      //  {{"colA", TypeId::BIGINT, false, Dist::Serial, 0, 0}, {"colB",
+      //  TypeId::INTEGER, true, Dist::Serial, 0, 0}}},
 
       // // Table 9
       // {"test_9",
       //  TEST9_SIZE,
-      //  {{"colA", TypeId::BIGINT, false, Dist::Serial, 0, 0}, {"colB", TypeId::INTEGER, true, Dist::Serial, 0, 0}}},
+      //  {{"colA", TypeId::BIGINT, false, Dist::Serial, 0, 0}, {"colB",
+      //  TypeId::INTEGER, true, Dist::Serial, 0, 0}}},
 
       // // Empty table with two columns
       // {"empty_table2",
       //  0,
-      //  {{"colA", TypeId::INTEGER, false, Dist::Serial, 0, 0}, {"colB", TypeId::INTEGER, false, Dist::Uniform, 0,
+      //  {{"colA", TypeId::INTEGER, false, Dist::Serial, 0, 0}, {"colB",
+      //  TypeId::INTEGER, false, Dist::Uniform, 0,
       //  9}}},
 
       // // Empty table with two columns
       // {"empty_table3",
       //  0,
-      //  {{"colA", TypeId::BIGINT, false, Dist::Serial, 0, 0}, {"colB", TypeId::INTEGER, false, Dist::Uniform, 0, 9}}},
+      //  {{"colA", TypeId::BIGINT, false, Dist::Serial, 0, 0}, {"colB",
+      //  TypeId::INTEGER, false, Dist::Uniform, 0, 9}}},
   };
 
-  for (auto &table_meta : insert_meta) {
+  for (auto& table_meta : insert_meta)
+  {
     // Create Schema
     std::vector<Column> cols{};
     cols.reserve(table_meta.col_meta_.size());
-    for (const auto &col_meta : table_meta.col_meta_) {
-      if (col_meta.type_ != TypeId::VARCHAR) {
+    for (const auto& col_meta : table_meta.col_meta_)
+    {
+      if (col_meta.type_ != TypeId::VARCHAR)
+      {
         cols.emplace_back(col_meta.name_, col_meta.type_);
-      } else {
+      }
+      else
+      {
         cols.emplace_back(col_meta.name_, col_meta.type_, TEST_VARLEN_SIZE);
       }
     }
     Schema schema(cols);
-    auto info = exec_ctx_->GetCatalog()->CreateTable(exec_ctx_->GetTransaction(), table_meta.name_, schema);
+    auto info = exec_ctx_->GetCatalog()->CreateTable(
+        exec_ctx_->GetTransaction(), table_meta.name_, schema);
     FillTable(info, &table_meta);
   }
 }

@@ -27,62 +27,90 @@
 #include "type/type_id.h"
 #include "type/value_factory.h"
 
-namespace bustub {
+namespace bustub
+{
 
-/** ArithmeticType represents the type of computation that we want to perform. */
-enum class ArithmeticType { Plus, Minus };
+/** ArithmeticType represents the type of computation that we want to perform.
+ */
+enum class ArithmeticType
+{
+  Plus,
+  Minus
+};
 
 /**
- * ArithmeticExpression represents two expressions being computed, ONLY SUPPORT INTEGER FOR NOW.
+ * ArithmeticExpression represents two expressions being computed, ONLY SUPPORT
+ * INTEGER FOR NOW.
  */
-class ArithmeticExpression : public AbstractExpression {
- public:
-  /** Creates a new comparison expression representing (left comp_type right). */
-  ArithmeticExpression(AbstractExpressionRef left, AbstractExpressionRef right, ArithmeticType compute_type)
-      : AbstractExpression({std::move(left), std::move(right)}, Column{"<val>", TypeId::INTEGER}),
-        compute_type_{compute_type} {
+class ArithmeticExpression : public AbstractExpression
+{
+  public:
+  /** Creates a new comparison expression representing (left comp_type right).
+   */
+  ArithmeticExpression(AbstractExpressionRef left, AbstractExpressionRef right,
+                       ArithmeticType compute_type)
+      : AbstractExpression({std::move(left), std::move(right)},
+                           Column{"<val>", TypeId::INTEGER}),
+        compute_type_{compute_type}
+  {
     if (GetChildAt(0)->GetReturnType().GetType() != TypeId::INTEGER ||
-        GetChildAt(1)->GetReturnType().GetType() != TypeId::INTEGER) {
+        GetChildAt(1)->GetReturnType().GetType() != TypeId::INTEGER)
+    {
       throw bustub::NotImplementedException("only support integer for now");
     }
   }
 
-  auto Evaluate(const Tuple *tuple, const Schema &schema) const -> Value override {
+  auto Evaluate(const Tuple* tuple, const Schema& schema) const
+      -> Value override
+  {
     Value lhs = GetChildAt(0)->Evaluate(tuple, schema);
     Value rhs = GetChildAt(1)->Evaluate(tuple, schema);
     auto res = PerformComputation(lhs, rhs);
-    if (res == std::nullopt) {
+    if (res == std::nullopt)
+    {
       return ValueFactory::GetNullValueByType(TypeId::INTEGER);
     }
     return ValueFactory::GetIntegerValue(*res);
   }
 
-  auto EvaluateJoin(const Tuple *left_tuple, const Schema &left_schema, const Tuple *right_tuple,
-                    const Schema &right_schema) const -> Value override {
-    Value lhs = GetChildAt(0)->EvaluateJoin(left_tuple, left_schema, right_tuple, right_schema);
-    Value rhs = GetChildAt(1)->EvaluateJoin(left_tuple, left_schema, right_tuple, right_schema);
+  auto EvaluateJoin(const Tuple* left_tuple, const Schema& left_schema,
+                    const Tuple* right_tuple, const Schema& right_schema) const
+      -> Value override
+  {
+    Value lhs = GetChildAt(0)->EvaluateJoin(left_tuple, left_schema,
+                                            right_tuple, right_schema);
+    Value rhs = GetChildAt(1)->EvaluateJoin(left_tuple, left_schema,
+                                            right_tuple, right_schema);
     auto res = PerformComputation(lhs, rhs);
-    if (res == std::nullopt) {
+    if (res == std::nullopt)
+    {
       return ValueFactory::GetNullValueByType(TypeId::INTEGER);
     }
     return ValueFactory::GetIntegerValue(*res);
   }
 
-  /** @return the string representation of the expression node and its children */
-  auto ToString() const -> std::string override {
-    return fmt::format("({}{}{})", *GetChildAt(0), compute_type_, *GetChildAt(1));
+  /** @return the string representation of the expression node and its children
+   */
+  auto ToString() const -> std::string override
+  {
+    return fmt::format("({}{}{})", *GetChildAt(0), compute_type_,
+                       *GetChildAt(1));
   }
 
   BUSTUB_EXPR_CLONE_WITH_CHILDREN(ArithmeticExpression);
 
   ArithmeticType compute_type_;
 
- private:
-  auto PerformComputation(const Value &lhs, const Value &rhs) const -> std::optional<int32_t> {
-    if (lhs.IsNull() || rhs.IsNull()) {
+  private:
+  auto PerformComputation(const Value& lhs, const Value& rhs) const
+      -> std::optional<int32_t>
+  {
+    if (lhs.IsNull() || rhs.IsNull())
+    {
       return std::nullopt;
     }
-    switch (compute_type_) {
+    switch (compute_type_)
+    {
       case ArithmeticType::Plus:
         return lhs.GetAs<int32_t>() + rhs.GetAs<int32_t>();
       case ArithmeticType::Minus:
@@ -95,11 +123,14 @@ class ArithmeticExpression : public AbstractExpression {
 }  // namespace bustub
 
 template <>
-struct fmt::formatter<bustub::ArithmeticType> : formatter<string_view> {
+struct fmt::formatter<bustub::ArithmeticType> : formatter<string_view>
+{
   template <typename FormatContext>
-  auto format(bustub::ArithmeticType c, FormatContext &ctx) const {
+  auto format(bustub::ArithmeticType c, FormatContext& ctx) const
+  {
     string_view name;
-    switch (c) {
+    switch (c)
+    {
       case bustub::ArithmeticType::Plus:
         name = "+";
         break;

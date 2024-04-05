@@ -10,18 +10,28 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include <memory>
-
 #include "execution/executors/insert_executor.h"
 
-namespace bustub {
+#include <memory>
 
-InsertExecutor::InsertExecutor(ExecutorContext *exec_ctx, const InsertPlanNode *plan,
-                               std::unique_ptr<AbstractExecutor> &&child_executor)
-    : AbstractExecutor(exec_ctx) {}
+namespace bustub
+{
 
-void InsertExecutor::Init() { throw NotImplementedException("InsertExecutor is not implemented"); }
+InsertExecutor::InsertExecutor(
+    ExecutorContext* exec_ctx, const InsertPlanNode* plan,
+    std::unique_ptr<AbstractExecutor>&& child_executor)
+    : AbstractExecutor(exec_ctx)
+{
+}
 
-auto InsertExecutor::Next([[maybe_unused]] Tuple *tuple, RID *rid) -> bool { return false; }
+void InsertExecutor::Init()
+{
+  throw NotImplementedException("InsertExecutor is not implemented");
+}
+
+auto InsertExecutor::Next([[maybe_unused]] Tuple* tuple, RID* rid) -> bool
+{
+  return false;
+}
 
 }  // namespace bustub

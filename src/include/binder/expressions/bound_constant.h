@@ -6,16 +6,21 @@
 #include "binder/bound_expression.h"
 #include "type/value.h"
 
-namespace bustub {
+namespace bustub
+{
 
 class BoundExpression;
 
 /**
  * A bound constant, e.g., `1`.
  */
-class BoundConstant : public BoundExpression {
- public:
-  explicit BoundConstant(const Value &val) : BoundExpression(ExpressionType::CONSTANT), val_(val) {}
+class BoundConstant : public BoundExpression
+{
+  public:
+  explicit BoundConstant(const Value& val)
+      : BoundExpression(ExpressionType::CONSTANT), val_(val)
+  {
+  }
 
   auto ToString() const -> std::string override { return val_.ToString(); }
 

@@ -21,19 +21,26 @@
 #include "common/enums/statement_type.h"
 #include "type/value.h"
 
-namespace bustub {
+namespace bustub
+{
 
-class UpdateStatement : public BoundStatement {
- public:
+class UpdateStatement : public BoundStatement
+{
+  public:
   explicit UpdateStatement(
-      std::unique_ptr<BoundBaseTableRef> table, std::unique_ptr<BoundExpression> filter_expr,
-      std::vector<std::pair<std::unique_ptr<BoundColumnRef>, std::unique_ptr<BoundExpression>>> target_expr);
+      std::unique_ptr<BoundBaseTableRef> table,
+      std::unique_ptr<BoundExpression> filter_expr,
+      std::vector<std::pair<std::unique_ptr<BoundColumnRef>,
+                            std::unique_ptr<BoundExpression>>>
+          target_expr);
 
   std::unique_ptr<BoundBaseTableRef> table_;
 
   std::unique_ptr<BoundExpression> filter_expr_;
 
-  std::vector<std::pair<std::unique_ptr<BoundColumnRef>, std::unique_ptr<BoundExpression>>> target_expr_;
+  std::vector<std::pair<std::unique_ptr<BoundColumnRef>,
+                        std::unique_ptr<BoundExpression>>>
+      target_expr_;
 
   auto ToString() const -> std::string override;
 };

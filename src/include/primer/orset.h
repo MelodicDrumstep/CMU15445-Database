@@ -3,15 +3,17 @@
 #include <string>
 #include <vector>
 
-namespace bustub {
+namespace bustub
+{
 
 /** @brief Unique ID type. */
 using uid_t = int64_t;
 
 /** @brief The observed remove set datatype. */
 template <typename T>
-class ORSet {
- public:
+class ORSet
+{
+  public:
   ORSet() = default;
 
   /**
@@ -20,7 +22,7 @@ class ORSet {
    * @param elem the element to check
    * @return true if the element is in the set, and false otherwise.
    */
-  auto Contains(const T &elem) const -> bool;
+  auto Contains(const T& elem) const -> bool;
 
   /**
    * @brief Adds an element to the set.
@@ -28,21 +30,21 @@ class ORSet {
    * @param elem the element to add
    * @param uid unique token associated with the add operation.
    */
-  void Add(const T &elem, uid_t uid);
+  void Add(const T& elem, uid_t uid);
 
   /**
    * @brief Removes an element from the set if it exists.
    *
    * @param elem the element to remove.
    */
-  void Remove(const T &elem);
+  void Remove(const T& elem);
 
   /**
    * @brief Merge changes from another ORSet.
    *
    * @param other another ORSet
    */
-  void Merge(const ORSet<T> &other);
+  void Merge(const ORSet<T>& other);
 
   /**
    * @brief Gets all the elements in the set.
@@ -58,7 +60,7 @@ class ORSet {
    */
   auto ToString() const -> std::string;
 
- private:
+  private:
   // TODO(student): Add your private memeber variables to represent ORSet.
 };
 

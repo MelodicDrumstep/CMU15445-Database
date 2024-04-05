@@ -8,7 +8,8 @@
 
 #pragma once
 
-namespace bustub {
+namespace bustub
+{
 
 //===--------------------------------------------------------------------===//
 // Statements

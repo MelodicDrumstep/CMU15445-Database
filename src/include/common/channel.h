@@ -17,14 +17,17 @@
 #include <queue>
 #include <utility>
 
-namespace bustub {
+namespace bustub
+{
 
 /**
- * Channels allow for safe sharing of data between threads. This is a multi-producer multi-consumer channel.
+ * Channels allow for safe sharing of data between threads. This is a
+ * multi-producer multi-consumer channel.
  */
 template <class T>
-class Channel {
- public:
+class Channel
+{
+  public:
   Channel() = default;
   ~Channel() = default;
 
@@ -33,7 +36,8 @@ class Channel {
    *
    * @param element The element to be inserted.
    */
-  void Put(T element) {
+  void Put(T element)
+  {
     std::unique_lock<std::mutex> lk(m_);
     q_.push(std::move(element));
     lk.unlock();
@@ -41,9 +45,11 @@ class Channel {
   }
 
   /**
-   * @brief Gets an element from the shared queue. If the queue is empty, blocks until an element is available.
+   * @brief Gets an element from the shared queue. If the queue is empty, blocks
+   * until an element is available.
    */
-  auto Get() -> T {
+  auto Get() -> T
+  {
     std::unique_lock<std::mutex> lk(m_);
     cv_.wait(lk, [&]() { return !q_.empty(); });
     T element = std::move(q_.front());
@@ -51,7 +57,7 @@ class Channel {
     return element;
   }
 
- private:
+  private:
   std::mutex m_;
   std::condition_variable cv_;
   std::queue<T> q_;

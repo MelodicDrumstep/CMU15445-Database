@@ -15,12 +15,14 @@
 #include "common/config.h"
 #include "fmt/format.h"
 
-namespace bustub {
+namespace bustub
+{
 
 //===--------------------------------------------------------------------===//
 // Statement Types
 //===--------------------------------------------------------------------===//
-enum class StatementType : uint8_t {
+enum class StatementType : uint8_t
+{
   INVALID_STATEMENT,        // invalid statement type
   SELECT_STATEMENT,         // select statement type
   INSERT_STATEMENT,         // insert statement type
@@ -38,11 +40,14 @@ enum class StatementType : uint8_t {
 }  // namespace bustub
 
 template <>
-struct fmt::formatter<bustub::StatementType> : formatter<string_view> {
+struct fmt::formatter<bustub::StatementType> : formatter<string_view>
+{
   template <typename FormatContext>
-  auto format(bustub::StatementType c, FormatContext &ctx) const {
+  auto format(bustub::StatementType c, FormatContext& ctx) const
+  {
     string_view name;
-    switch (c) {
+    switch (c)
+    {
       case bustub::StatementType::INVALID_STATEMENT:
         name = "Invalid";
         break;

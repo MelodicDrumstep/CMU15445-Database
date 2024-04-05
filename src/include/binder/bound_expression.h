@@ -2,23 +2,27 @@
 
 #include <memory>
 #include <string>
+
 #include "common/macros.h"
 #include "fmt/format.h"
 
-namespace bustub {
+namespace bustub
+{
 
 /**
  * All types of expressions in binder.
  */
-enum class ExpressionType : uint8_t {
+enum class ExpressionType : uint8_t
+{
   INVALID = 0,    /**< Invalid expression type. */
   CONSTANT = 1,   /**< Constant expression type. */
   COLUMN_REF = 3, /**< A column in a table. */
   TYPE_CAST = 4,  /**< Type cast expression type. */
   FUNCTION = 5,   /**< Function expression type. */
   AGG_CALL = 6,   /**< Aggregation function expression type. */
-  STAR = 7,       /**< Star expression type, will be rewritten by binder and won't appear in plan. */
-  UNARY_OP = 8,   /**< Unary expression type. */
+  STAR = 7,     /**< Star expression type, will be rewritten by binder and won't
+                   appear in plan. */
+  UNARY_OP = 8, /**< Unary expression type. */
   BINARY_OP = 9,  /**< Binary expression type. */
   ALIAS = 10,     /**< Alias expression type. */
   FUNC_CALL = 11, /**< Function call expression type. */
@@ -28,8 +32,9 @@ enum class ExpressionType : uint8_t {
 /**
  * A bound expression.
  */
-class BoundExpression {
- public:
+class BoundExpression
+{
+  public:
   explicit BoundExpression(ExpressionType type) : type_(type) {}
   BoundExpression() = default;
   virtual ~BoundExpression() = default;
@@ -38,7 +43,10 @@ class BoundExpression {
 
   auto IsInvalid() const -> bool { return type_ == ExpressionType::INVALID; }
 
-  virtual auto HasAggregation() const -> bool { UNREACHABLE("has aggregation should have been implemented!"); }
+  virtual auto HasAggregation() const -> bool
+  {
+    UNREACHABLE("has aggregation should have been implemented!");
+  }
 
   virtual auto HasWindowFunction() const -> bool { return false; }
 
@@ -49,29 +57,40 @@ class BoundExpression {
 }  // namespace bustub
 
 template <typename T>
-struct fmt::formatter<T, std::enable_if_t<std::is_base_of<bustub::BoundExpression, T>::value, char>>
-    : fmt::formatter<std::string> {
+struct fmt::formatter<
+    T,
+    std::enable_if_t<std::is_base_of<bustub::BoundExpression, T>::value, char>>
+    : fmt::formatter<std::string>
+{
   template <typename FormatCtx>
-  auto format(const T &x, FormatCtx &ctx) const {
+  auto format(const T& x, FormatCtx& ctx) const
+  {
     return fmt::formatter<std::string>::format(x.ToString(), ctx);
   }
 };
 
 template <typename T>
-struct fmt::formatter<std::unique_ptr<T>, std::enable_if_t<std::is_base_of<bustub::BoundExpression, T>::value, char>>
-    : fmt::formatter<std::string> {
+struct fmt::formatter<
+    std::unique_ptr<T>,
+    std::enable_if_t<std::is_base_of<bustub::BoundExpression, T>::value, char>>
+    : fmt::formatter<std::string>
+{
   template <typename FormatCtx>
-  auto format(const std::unique_ptr<T> &x, FormatCtx &ctx) const {
+  auto format(const std::unique_ptr<T>& x, FormatCtx& ctx) const
+  {
     return fmt::formatter<std::string>::format(x->ToString(), ctx);
   }
 };
 
 template <>
-struct fmt::formatter<bustub::ExpressionType> : formatter<string_view> {
+struct fmt::formatter<bustub::ExpressionType> : formatter<string_view>
+{
   template <typename FormatContext>
-  auto format(bustub::ExpressionType c, FormatContext &ctx) const {
+  auto format(bustub::ExpressionType c, FormatContext& ctx) const
+  {
     string_view name;
-    switch (c) {
+    switch (c)
+    {
       case bustub::ExpressionType::INVALID:
         name = "Invalid";
         break;

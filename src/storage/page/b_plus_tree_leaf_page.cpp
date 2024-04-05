@@ -9,13 +9,15 @@
 //
 //===----------------------------------------------------------------------===//
 
+#include "storage/page/b_plus_tree_leaf_page.h"
+
 #include <sstream>
 
 #include "common/exception.h"
 #include "common/rid.h"
-#include "storage/page/b_plus_tree_leaf_page.h"
 
-namespace bustub {
+namespace bustub
+{
 
 /*****************************************************************************
  * HELPER METHODS AND UTILITIES
@@ -23,7 +25,8 @@ namespace bustub {
 
 /**
  * Init method after creating a new leaf page
- * Including set page type, set current size to zero, set next page id and set max size
+ * Including set page type, set current size to zero, set next page id and set
+ * max size
  */
 
 INDEX_TEMPLATE_ARGUMENTS
@@ -47,15 +50,28 @@ auto B_PLUS_TREE_LEAF_PAGE_TYPE::GetNextPageId() const -> page_id_t
 INDEX_TEMPLATE_ARGUMENTS
 void B_PLUS_TREE_LEAF_PAGE_TYPE::SetNextPageId(page_id_t next_page_id)
 {
-  this -> next_page_id_ = next_page_id;
+  this->next_page_id_ = next_page_id;
 }
 
 /*
  * Helper method to find and return the key associated with input "index"(a.k.a
  * array offset)
  */
+
 INDEX_TEMPLATE_ARGUMENTS
-auto B_PLUS_TREE_LEAF_PAGE_TYPE::KeyAt(int index) const -> KeyType 
+void B_PLUS_TREE_LEAF_PAGE_TYPE::SetAt(int index, const KeyType& key,
+                                       const ValueType& value)
+{
+  if (index >= 0 && index < GetSize())
+  {
+    array_[index] = {key, value};
+    return;
+  }
+  // std::cout << "set all, out of leaf range" << std::endl;
+}
+
+INDEX_TEMPLATE_ARGUMENTS
+auto B_PLUS_TREE_LEAF_PAGE_TYPE::KeyAt(int index) const -> KeyType
 {
   // replace with your own code
   return array_[index].first;

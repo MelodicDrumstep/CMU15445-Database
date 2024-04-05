@@ -20,7 +20,8 @@
 #include "storage/index/generic_key.h"
 #include "storage/page/hash_table_page_defs.h"
 
-namespace bustub {
+namespace bustub
+{
 
 /**
  *
@@ -31,8 +32,9 @@ namespace bustub {
  * | LSN (4) | Size (4) | PageId(4) | NextBlockIndex(4)
  * -------------------------------------------------------------
  */
-class HashTableHeaderPage {
- public:
+class HashTableHeaderPage
+{
+  public:
   /**
    * @return the number of buckets in the hash table;
    */
@@ -89,7 +91,7 @@ class HashTableHeaderPage {
    */
   auto NumBlocks() -> size_t;
 
- private:
+  private:
   __attribute__((unused)) lsn_t lsn_;
   __attribute__((unused)) size_t size_;
   __attribute__((unused)) page_id_t page_id_;

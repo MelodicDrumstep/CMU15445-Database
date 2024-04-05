@@ -24,21 +24,26 @@
 #include "execution/plans/abstract_plan.h"
 #include "storage/table/tuple.h"
 
-namespace bustub {
+namespace bustub
+{
 
 /**
  * The ExecutionEngine class executes query plans.
  */
-class ExecutionEngine {
- public:
+class ExecutionEngine
+{
+  public:
   /**
    * Construct a new ExecutionEngine instance.
    * @param bpm The buffer pool manager used by the execution engine
    * @param txn_mgr The transaction manager used by the execution engine
    * @param catalog The catalog used by the execution engine
    */
-  ExecutionEngine(BufferPoolManager *bpm, TransactionManager *txn_mgr, Catalog *catalog)
-      : bpm_{bpm}, txn_mgr_{txn_mgr}, catalog_{catalog} {}
+  ExecutionEngine(BufferPoolManager* bpm, TransactionManager* txn_mgr,
+                  Catalog* catalog)
+      : bpm_{bpm}, txn_mgr_{txn_mgr}, catalog_{catalog}
+  {
+  }
 
   DISALLOW_COPY_AND_MOVE(ExecutionEngine);
 
@@ -51,8 +56,9 @@ class ExecutionEngine {
    * @return `true` if execution of the query plan succeeds, `false` otherwise
    */
   // NOLINTNEXTLINE
-  auto Execute(const AbstractPlanNodeRef &plan, std::vector<Tuple> *result_set, Transaction *txn,
-               ExecutorContext *exec_ctx) -> bool {
+  auto Execute(const AbstractPlanNodeRef& plan, std::vector<Tuple>* result_set,
+               Transaction* txn, ExecutorContext* exec_ctx) -> bool
+  {
     BUSTUB_ASSERT((txn == exec_ctx->GetTransaction()), "Broken Invariant");
 
     // Construct the executor for the abstract plan node
@@ -61,13 +67,17 @@ class ExecutionEngine {
     // Initialize the executor
     auto executor_succeeded = true;
 
-    try {
+    try
+    {
       executor->Init();
       PollExecutor(executor.get(), plan, result_set);
       PerformChecks(exec_ctx);
-    } catch (const ExecutionException &ex) {
+    }
+    catch (const ExecutionException& ex)
+    {
       executor_succeeded = false;
-      if (result_set != nullptr) {
+      if (result_set != nullptr)
+      {
         result_set->clear();
       }
     }
@@ -75,37 +85,48 @@ class ExecutionEngine {
     return executor_succeeded;
   }
 
-  void PerformChecks(ExecutorContext *exec_ctx) {
-    for (const auto &[left_executor, right_executor] : exec_ctx->GetNLJCheckExecutorSet()) {
-      auto casted_left_executor = dynamic_cast<const InitCheckExecutor *>(left_executor);
-      auto casted_right_executor = dynamic_cast<const InitCheckExecutor *>(right_executor);
-      BUSTUB_ASSERT(casted_right_executor->GetInitCount() + 1 >= casted_left_executor->GetNextCount(),
-                    "nlj check failed, are you initialising the right executor every time when there is a left tuple? "
+  void PerformChecks(ExecutorContext* exec_ctx)
+  {
+    for (const auto& [left_executor, right_executor] :
+         exec_ctx->GetNLJCheckExecutorSet())
+    {
+      auto casted_left_executor =
+          dynamic_cast<const InitCheckExecutor*>(left_executor);
+      auto casted_right_executor =
+          dynamic_cast<const InitCheckExecutor*>(right_executor);
+      BUSTUB_ASSERT(casted_right_executor->GetInitCount() + 1 >=
+                        casted_left_executor->GetNextCount(),
+                    "nlj check failed, are you initialising the right executor "
+                    "every time when there is a left tuple? "
                     "(off-by-one is okay)");
     }
   }
 
- private:
+  private:
   /**
    * Poll the executor until exhausted, or exception escapes.
    * @param executor The root executor
    * @param plan The plan to execute
    * @param result_set The tuple result set
    */
-  static void PollExecutor(AbstractExecutor *executor, const AbstractPlanNodeRef &plan,
-                           std::vector<Tuple> *result_set) {
+  static void PollExecutor(AbstractExecutor* executor,
+                           const AbstractPlanNodeRef& plan,
+                           std::vector<Tuple>* result_set)
+  {
     RID rid{};
     Tuple tuple{};
-    while (executor->Next(&tuple, &rid)) {
-      if (result_set != nullptr) {
+    while (executor->Next(&tuple, &rid))
+    {
+      if (result_set != nullptr)
+      {
         result_set->push_back(tuple);
       }
     }
   }
 
-  [[maybe_unused]] BufferPoolManager *bpm_;
-  [[maybe_unused]] TransactionManager *txn_mgr_;
-  [[maybe_unused]] Catalog *catalog_;
+  [[maybe_unused]] BufferPoolManager* bpm_;
+  [[maybe_unused]] TransactionManager* txn_mgr_;
+  [[maybe_unused]] Catalog* catalog_;
 };
 
 }  // namespace bustub

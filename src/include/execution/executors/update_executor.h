@@ -22,24 +22,26 @@
 #include "storage/table/tuple.h"
 #include "type/value_factory.h"
 
-namespace bustub {
+namespace bustub
+{
 
 /**
  * UpdateExecutor executes an update on a table.
  * Updated values are always pulled from a child.
  */
-class UpdateExecutor : public AbstractExecutor {
+class UpdateExecutor : public AbstractExecutor
+{
   friend class UpdatePlanNode;
 
- public:
+  public:
   /**
    * Construct a new UpdateExecutor instance.
    * @param exec_ctx The executor context
    * @param plan The update plan to be executed
    * @param child_executor The child executor that feeds the update
    */
-  UpdateExecutor(ExecutorContext *exec_ctx, const UpdatePlanNode *plan,
-                 std::unique_ptr<AbstractExecutor> &&child_executor);
+  UpdateExecutor(ExecutorContext* exec_ctx, const UpdatePlanNode* plan,
+                 std::unique_ptr<AbstractExecutor>&& child_executor);
 
   /** Initialize the update */
   void Init() override;
@@ -52,17 +54,20 @@ class UpdateExecutor : public AbstractExecutor {
    *
    * NOTE: UpdateExecutor::Next() does not use the `rid` out-parameter.
    */
-  auto Next([[maybe_unused]] Tuple *tuple, RID *rid) -> bool override;
+  auto Next([[maybe_unused]] Tuple* tuple, RID* rid) -> bool override;
 
   /** @return The output schema for the update */
-  auto GetOutputSchema() const -> const Schema & override { return plan_->OutputSchema(); }
+  auto GetOutputSchema() const -> const Schema& override
+  {
+    return plan_->OutputSchema();
+  }
 
- private:
+  private:
   /** The update plan node to be executed */
-  const UpdatePlanNode *plan_;
+  const UpdatePlanNode* plan_;
 
   /** Metadata identifying the table that should be updated */
-  const TableInfo *table_info_;
+  const TableInfo* table_info_;
 
   /** The child executor to obtain value from */
   std::unique_ptr<AbstractExecutor> child_executor_;

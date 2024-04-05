@@ -18,19 +18,30 @@
 
 #include "execution/expressions/abstract_expression.h"
 
-namespace bustub {
+namespace bustub
+{
 /**
  * ConstantValueExpression represents constants.
  */
-class ConstantValueExpression : public AbstractExpression {
- public:
+class ConstantValueExpression : public AbstractExpression
+{
+  public:
   /** Creates a new constant value expression wrapping the given value. */
-  explicit ConstantValueExpression(const Value &val) : AbstractExpression({}, val.GetColumn()), val_(val) {}
+  explicit ConstantValueExpression(const Value& val)
+      : AbstractExpression({}, val.GetColumn()), val_(val)
+  {
+  }
 
-  auto Evaluate(const Tuple *tuple, const Schema &schema) const -> Value override { return val_; }
+  auto Evaluate(const Tuple* tuple, const Schema& schema) const
+      -> Value override
+  {
+    return val_;
+  }
 
-  auto EvaluateJoin(const Tuple *left_tuple, const Schema &left_schema, const Tuple *right_tuple,
-                    const Schema &right_schema) const -> Value override {
+  auto EvaluateJoin(const Tuple* left_tuple, const Schema& left_schema,
+                    const Tuple* right_tuple, const Schema& right_schema) const
+      -> Value override
+  {
     return val_;
   }
 

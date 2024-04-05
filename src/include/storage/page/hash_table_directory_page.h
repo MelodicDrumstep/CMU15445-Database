@@ -20,7 +20,8 @@
 #include "storage/index/generic_key.h"
 #include "storage/page/hash_table_page_defs.h"
 
-namespace bustub {
+namespace bustub
+{
 
 /**
  *
@@ -28,11 +29,13 @@ namespace bustub {
  *
  * Directory format (size in byte):
  * --------------------------------------------------------------------------------------------
- * | LSN (4) | PageId(4) | GlobalDepth(4) | LocalDepths(512) | BucketPageIds(2048) | Free(1524)
+ * | LSN (4) | PageId(4) | GlobalDepth(4) | LocalDepths(512) |
+ * BucketPageIds(2048) | Free(1524)
  * --------------------------------------------------------------------------------------------
  */
-class HashTableDirectoryPage {
- public:
+class HashTableDirectoryPage
+{
+  public:
   /**
    * @return the page ID of this page
    */
@@ -93,7 +96,8 @@ class HashTableDirectoryPage {
    * upwards.  For example, global depth 3 corresponds to 0x00000007 in a 32-bit
    * representation.
    *
-   * @return mask of global_depth 1's and the rest 0's (with 1's from LSB upwards)
+   * @return mask of global_depth 1's and the rest 0's (with 1's from LSB
+   * upwards)
    */
   auto GetGlobalDepthMask() -> uint32_t;
 
@@ -186,7 +190,7 @@ class HashTableDirectoryPage {
    */
   void PrintDirectory();
 
- private:
+  private:
   page_id_t page_id_;
   lsn_t lsn_;
   uint32_t global_depth_{0};
