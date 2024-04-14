@@ -10,11 +10,13 @@
 #include "gtest/gtest.h"
 #include "primer/trie.h"
 
-namespace bustub {
+namespace bustub
+{
 
 using Integer = std::unique_ptr<uint32_t>;
 
-TEST(TrieTest, NonCopyableTest) {
+TEST(TrieTest, NonCopyableTest)
+{
   auto trie = Trie();
   trie = trie.Put<Integer>("tes", std::make_unique<uint32_t>(233));
   trie = trie.Put<Integer>("te", std::make_unique<uint32_t>(23));

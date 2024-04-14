@@ -18,9 +18,9 @@ auto TrieStore::Get(std::string_view key) -> std::optional<ValueGuard<T>>
   //     root. Otherwise, return std::nullopt.
   // throw NotImplementedException("TrieStore::Get is not implemented.");
   root_lock_.lock();
-  Trie& cur = root_;
+  Trie * temp_root = root_;
   root_lock_.unlock();
-  const T* res = cur.Get<T>(key);
+  const T* res = temp_root -> <T>(key);
   if (res == nullptr)
   {
     return std::nullopt;
@@ -35,10 +35,11 @@ void TrieStore::Put(std::string_view key, T value)
   // you can achieve this. The logic should be somehow similar to
   // `TrieStore::Get`. throw NotImplementedException("TrieStore::Put is not
   // implemented.");
-  write_lock_.lock();
   root_lock_.lock();
-  root_ = root_.Put<T>(key, std::move(value));
+  Trie * temp_root = &root_;
   root_lock_.unlock();
+  write_lock_.lock();
+  root_ = temp_root -> Put<T>(key, std::move(value));
   write_lock_.unlock();
 }
 
@@ -48,10 +49,11 @@ void TrieStore::Remove(std::string_view key)
   // you can achieve this. The logic should be somehow similar to
   // `TrieStore::Get`. throw NotImplementedException("TrieStore::Remove is not
   // implemented.");
-  write_lock_.lock();
   root_lock_.lock();
-  root_ = root_.Remove(key);
+  Trie * temp_root = &root_;
   root_lock_.unlock();
+  write_lock_.lock();
+  root_ = temp_root -> Remove(key);
   write_lock_.unlock();
 }
 

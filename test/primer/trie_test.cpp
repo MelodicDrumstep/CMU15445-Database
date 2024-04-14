@@ -1,4 +1,7 @@
+#include "primer/trie.h"
+
 #include <fmt/format.h>
+
 #include <bitset>
 #include <functional>
 #include <numeric>
@@ -8,13 +11,14 @@
 
 #include "common/exception.h"
 #include "gtest/gtest.h"
-#include "primer/trie.h"
 
-namespace bustub {
+namespace bustub
+{
 
 TEST(TrieTest, ConstructorTest) { auto trie = Trie(); }
 
-TEST(TrieTest, BasicPutTest) {
+TEST(TrieTest, BasicPutTest)
+{
   auto trie = Trie();
   trie = trie.Put<uint32_t>("test-int", 233);
   trie = trie.Put<uint64_t>("test-int2", 23333333);
@@ -22,7 +26,8 @@ TEST(TrieTest, BasicPutTest) {
   trie = trie.Put<std::string>("", "empty-key");
 }
 
-TEST(TrieTest, TrieStructureCheck) {
+TEST(TrieTest, TrieStructureCheck)
+{
   auto trie = Trie();
   // Put something
   trie = trie.Put<uint32_t>("test", 233);
@@ -33,12 +38,26 @@ TEST(TrieTest, TrieStructureCheck) {
   ASSERT_EQ(root->children_.size(), 1);
   ASSERT_EQ(root->children_.at('t')->children_.size(), 1);
   ASSERT_EQ(root->children_.at('t')->children_.at('e')->children_.size(), 1);
-  ASSERT_EQ(root->children_.at('t')->children_.at('e')->children_.at('s')->children_.size(), 1);
-  ASSERT_EQ(root->children_.at('t')->children_.at('e')->children_.at('s')->children_.at('t')->children_.size(), 0);
-  ASSERT_TRUE(root->children_.at('t')->children_.at('e')->children_.at('s')->children_.at('t')->is_value_node_);
+  ASSERT_EQ(root->children_.at('t')
+                ->children_.at('e')
+                ->children_.at('s')
+                ->children_.size(),
+            1);
+  ASSERT_EQ(root->children_.at('t')
+                ->children_.at('e')
+                ->children_.at('s')
+                ->children_.at('t')
+                ->children_.size(),
+            0);
+  ASSERT_TRUE(root->children_.at('t')
+                  ->children_.at('e')
+                  ->children_.at('s')
+                  ->children_.at('t')
+                  ->is_value_node_);
 }
 
-TEST(TrieTest, BasicPutGetTest) {
+TEST(TrieTest, BasicPutGetTest)
+{
   auto trie = Trie();
   // Put something
   trie = trie.Put<uint32_t>("test", 233);
@@ -56,7 +75,8 @@ TEST(TrieTest, BasicPutGetTest) {
   ASSERT_EQ(*trie.Get<std::string>(""), "empty-key");
 }
 
-TEST(TrieTest, PutGetOnePath) {
+TEST(TrieTest, PutGetOnePath)
+{
   auto trie = Trie();
   trie = trie.Put<uint32_t>("111", 111);
   trie = trie.Put<uint32_t>("11", 11);
@@ -67,7 +87,8 @@ TEST(TrieTest, PutGetOnePath) {
   ASSERT_EQ(*trie.Get<uint32_t>("1111"), 1111);
 }
 
-TEST(TrieTest, BasicRemoveTest1) {
+TEST(TrieTest, BasicRemoveTest1)
+{
   auto trie = Trie();
   // Put something
   trie = trie.Put<uint32_t>("test", 2333);
@@ -86,7 +107,8 @@ TEST(TrieTest, BasicRemoveTest1) {
   ASSERT_EQ(trie.Get<uint32_t>("test"), nullptr);
 }
 
-TEST(TrieTest, BasicRemoveTest2) {
+TEST(TrieTest, BasicRemoveTest2)
+{
   auto trie = Trie();
   // Put something
   trie = trie.Put<uint32_t>("test", 2333);
@@ -109,26 +131,31 @@ TEST(TrieTest, BasicRemoveTest2) {
   ASSERT_EQ(trie.Get<uint32_t>("test"), nullptr);
 }
 
-TEST(TrieTest, RemoveFreeTest) {
+TEST(TrieTest, RemoveFreeTest)
+{
   auto trie = Trie();
   trie = trie.Put<uint32_t>("test", 2333);
   trie = trie.Put<uint32_t>("te", 23);
   trie = trie.Put<uint32_t>("tes", 233);
   trie = trie.Remove("tes");
   trie = trie.Remove("test");
-  ASSERT_EQ(trie.GetRoot()->children_.at('t')->children_.at('e')->children_.size(), 0);
+  ASSERT_EQ(
+      trie.GetRoot()->children_.at('t')->children_.at('e')->children_.size(),
+      0);
   trie = trie.Remove("te");
   ASSERT_EQ(trie.GetRoot(), nullptr);
 }
 
-TEST(TrieTest, MismatchTypeTest) {
+TEST(TrieTest, MismatchTypeTest)
+{
   auto trie = Trie();
   // Put something
   trie = trie.Put<uint32_t>("test", 2333);
   ASSERT_EQ(trie.Get<std::string>("test"), nullptr);
 }
 
-TEST(TrieTest, CopyOnWriteTest1) {
+TEST(TrieTest, CopyOnWriteTest1)
+{
   auto empty_trie = Trie();
   // Put something
   auto trie1 = empty_trie.Put<uint32_t>("test", 2333);
@@ -158,7 +185,8 @@ TEST(TrieTest, CopyOnWriteTest1) {
   ASSERT_EQ(trie6.Get<uint32_t>("test"), nullptr);
 }
 
-TEST(TrieTest, CopyOnWriteTest2) {
+TEST(TrieTest, CopyOnWriteTest2)
+{
   auto empty_trie = Trie();
   // Put something
   auto trie1 = empty_trie.Put<uint32_t>("test", 2333);
@@ -188,7 +216,8 @@ TEST(TrieTest, CopyOnWriteTest2) {
   ASSERT_EQ(*trie6.Get<std::string>("test"), "2333");
 }
 
-TEST(TrieTest, CopyOnWriteTest3) {
+TEST(TrieTest, CopyOnWriteTest3)
+{
   auto empty_trie = Trie();
   // Put something
   auto trie1 = empty_trie.Put<uint32_t>("test", 2333);
@@ -218,68 +247,85 @@ TEST(TrieTest, CopyOnWriteTest3) {
   ASSERT_EQ(*trie6.Get<std::string>("test"), "2333");
 }
 
-TEST(TrieTest, MixedTest) {
+TEST(TrieTest, MixedTest)
+{
   auto trie = Trie();
-  for (uint32_t i = 0; i < 23333; i++) {
+  for (uint32_t i = 0; i < 23333; i++)
+  {
     std::string key = fmt::format("{:#05}", i);
     std::string value = fmt::format("value-{:#08}", i);
     trie = trie.Put<std::string>(key, value);
   }
   auto trie_full = trie;
-  for (uint32_t i = 0; i < 23333; i += 2) {
+  for (uint32_t i = 0; i < 23333; i += 2)
+  {
     std::string key = fmt::format("{:#05}", i);
     std::string value = fmt::format("new-value-{:#08}", i);
     trie = trie.Put<std::string>(key, value);
   }
   auto trie_override = trie;
-  for (uint32_t i = 0; i < 23333; i += 3) {
+  for (uint32_t i = 0; i < 23333; i += 3)
+  {
     std::string key = fmt::format("{:#05}", i);
     trie = trie.Remove(key);
   }
   auto trie_final = trie;
 
   // verify trie_full
-  for (uint32_t i = 0; i < 23333; i++) {
+  for (uint32_t i = 0; i < 23333; i++)
+  {
     std::string key = fmt::format("{:#05}", i);
     std::string value = fmt::format("value-{:#08}", i);
     ASSERT_EQ(*trie_full.Get<std::string>(key), value);
   }
 
   // verify trie_override
-  for (uint32_t i = 0; i < 23333; i++) {
+  for (uint32_t i = 0; i < 23333; i++)
+  {
     std::string key = fmt::format("{:#05}", i);
-    if (i % 2 == 0) {
+    if (i % 2 == 0)
+    {
       std::string value = fmt::format("new-value-{:#08}", i);
       ASSERT_EQ(*trie_override.Get<std::string>(key), value);
-    } else {
+    }
+    else
+    {
       std::string value = fmt::format("value-{:#08}", i);
       ASSERT_EQ(*trie_override.Get<std::string>(key), value);
     }
   }
 
   // verify final trie
-  for (uint32_t i = 0; i < 23333; i++) {
+  for (uint32_t i = 0; i < 23333; i++)
+  {
     std::string key = fmt::format("{:#05}", i);
-    if (i % 3 == 0) {
+    if (i % 3 == 0)
+    {
       ASSERT_EQ(trie_final.Get<std::string>(key), nullptr);
-    } else if (i % 2 == 0) {
+    }
+    else if (i % 2 == 0)
+    {
       std::string value = fmt::format("new-value-{:#08}", i);
       ASSERT_EQ(*trie_final.Get<std::string>(key), value);
-    } else {
+    }
+    else
+    {
       std::string value = fmt::format("value-{:#08}", i);
       ASSERT_EQ(*trie_final.Get<std::string>(key), value);
     }
   }
 }
 
-TEST(TrieTest, PointerStability) {
+TEST(TrieTest, PointerStability)
+{
   auto trie = Trie();
   trie = trie.Put<uint32_t>("test", 2333);
-  auto *ptr_before = trie.Get<std::string>("test");
+  auto* ptr_before = trie.Get<std::string>("test");
   trie = trie.Put<uint32_t>("tes", 233);
   trie = trie.Put<uint32_t>("te", 23);
-  auto *ptr_after = trie.Get<std::string>("test");
-  ASSERT_EQ(reinterpret_cast<uint64_t>(ptr_before), reinterpret_cast<uint64_t>(ptr_after));
+  auto* ptr_after = trie.Get<std::string>("test");
+  ASSERT_EQ(reinterpret_cast<uint64_t>(ptr_before),
+            reinterpret_cast<uint64_t>(ptr_after));
 }
 
 }  // namespace bustub
