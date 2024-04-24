@@ -55,6 +55,7 @@ class DiskManagerMemory : public DiskManager
    * @param page_id id of the page
    * @param[out] page_data output buffer
    */
+
   void ReadPage(page_id_t page_id, char* page_data) override;
 
   private:
@@ -65,6 +66,7 @@ class DiskManagerMemory : public DiskManager
  * DiskManagerMemory replicates the utility of DiskManager on memory. It is
  * primarily used for data structure performance testing.
  */
+
 class DiskManagerUnlimitedMemory : public DiskManager
 {
   public:
@@ -78,6 +80,7 @@ class DiskManagerUnlimitedMemory : public DiskManager
    * @param page_id id of the page
    * @param page_data raw page data
    */
+
   void WritePage(page_id_t page_id, const char* page_data) override
   {
     ProcessLatency(page_id);

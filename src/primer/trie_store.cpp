@@ -18,14 +18,14 @@ auto TrieStore::Get(std::string_view key) -> std::optional<ValueGuard<T>>
   //     root. Otherwise, return std::nullopt.
   // throw NotImplementedException("TrieStore::Get is not implemented.");
   root_lock_.lock();
-  Trie * temp_root = root_;
+  Trie * temp_root = &root_;
   root_lock_.unlock();
-  const T* res = temp_root -> <T>(key);
+  const T* res = temp_root -> Get<T>(key);
   if (res == nullptr)
   {
     return std::nullopt;
   }
-  return ValueGuard<T>(cur, *(res));
+  return ValueGuard<T>(*temp_root, *(res));
 }
 
 template <class T>
@@ -35,12 +35,15 @@ void TrieStore::Put(std::string_view key, T value)
   // you can achieve this. The logic should be somehow similar to
   // `TrieStore::Get`. throw NotImplementedException("TrieStore::Put is not
   // implemented.");
-  root_lock_.lock();
-  Trie * temp_root = &root_;
-  root_lock_.unlock();
-  write_lock_.lock();
-  root_ = temp_root -> Put<T>(key, std::move(value));
-  write_lock_.unlock();
+	root_lock_.lock();
+	Trie * temp = &root_;
+	root_lock_.unlock();
+	write_lock_.lock();
+	Trie new_root = temp -> Put(key, std::move(value));
+	root_lock_.lock();
+	root_ = new_root;
+	root_lock_.unlock();
+	write_lock_.unlock();
 }
 
 void TrieStore::Remove(std::string_view key)
@@ -49,12 +52,15 @@ void TrieStore::Remove(std::string_view key)
   // you can achieve this. The logic should be somehow similar to
   // `TrieStore::Get`. throw NotImplementedException("TrieStore::Remove is not
   // implemented.");
-  root_lock_.lock();
-  Trie * temp_root = &root_;
-  root_lock_.unlock();
-  write_lock_.lock();
-  root_ = temp_root -> Remove(key);
-  write_lock_.unlock();
+	root_lock_.lock();
+	Trie * temp = &root_;
+	root_lock_.unlock();
+	write_lock_.lock();
+	Trie new_root = temp -> Remove(key);
+	root_lock_.lock();
+	root_ = new_root;
+	root_lock_.unlock();
+	write_lock_.unlock();
 }
 
 // Below are explicit instantiation of template functions.
