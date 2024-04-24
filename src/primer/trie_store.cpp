@@ -18,14 +18,14 @@ auto TrieStore::Get(std::string_view key) -> std::optional<ValueGuard<T>>
   //     root. Otherwise, return std::nullopt.
   // throw NotImplementedException("TrieStore::Get is not implemented.");
   root_lock_.lock();
-  Trie * temp_root = &root_;
+  Trie temp_root = root_;
   root_lock_.unlock();
-  const T* res = temp_root -> Get<T>(key);
+  const T* res = temp_root.Get<T>(key);
   if (res == nullptr)
   {
     return std::nullopt;
   }
-  return ValueGuard<T>(*temp_root, *(res));
+  return ValueGuard<T>(temp_root, *(res));
 }
 
 template <class T>
@@ -36,10 +36,10 @@ void TrieStore::Put(std::string_view key, T value)
   // `TrieStore::Get`. throw NotImplementedException("TrieStore::Put is not
   // implemented.");
 	root_lock_.lock();
-	Trie * temp = &root_;
+	Trie temp = root_;
 	root_lock_.unlock();
 	write_lock_.lock();
-	Trie new_root = temp -> Put(key, std::move(value));
+	Trie new_root = temp.Put(key, std::move(value));
 	root_lock_.lock();
 	root_ = new_root;
 	root_lock_.unlock();
@@ -53,10 +53,10 @@ void TrieStore::Remove(std::string_view key)
   // `TrieStore::Get`. throw NotImplementedException("TrieStore::Remove is not
   // implemented.");
 	root_lock_.lock();
-	Trie * temp = &root_;
+	Trie temp = root_;
 	root_lock_.unlock();
 	write_lock_.lock();
-	Trie new_root = temp -> Remove(key);
+	Trie new_root = temp.Remove(key);
 	root_lock_.lock();
 	root_ = new_root;
 	root_lock_.unlock();

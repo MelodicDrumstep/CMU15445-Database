@@ -193,28 +193,41 @@ auto Trie::Remove(std::string_view key) const -> Trie
     }
   }
 
-  if(!temp_node || !temp_node -> is_value_node_)
+if(!temp_node || !temp_node -> is_value_node_)
   {
     return Trie(root_);
   }
   else
   {
-    // if(temp_node -> children_.empty())
-    // {
-    //   temp_node = nullptr;
-    // }
-    //else
-    //{
-      //temp_node -> is_value_node_ = 0; 
+    if(temp_node -> children_.empty())
+    {
+      temp_node = nullptr;
+	  //stk.top() -> children_.erase(key[key.size() - 1]);
+    }
+    else
+    {
       temp_node = std::make_shared<TrieNode>(temp_node -> children_);
-    //}
+    }
   }
 
   for(int k = key.size() - 1; k >= 0; k--)
   {
     char c = key[k];
-    stk.top() -> children_[c] = temp_node;
+    if(temp_node == nullptr)
+    {
+      stk.top() -> children_.erase(c);
+    }
+	  else
+    {
+      stk.top() -> children_[c] = temp_node;
+    }
     temp_node = stk.top();
+
+	  if(!temp_node -> is_value_node_ && temp_node -> children_.empty())
+    {
+      temp_node = nullptr;
+	  //stk.top() -> children_.erase(key[key.size() - 1]);
+    }
     stk.pop();
   }
 
