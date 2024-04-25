@@ -37,8 +37,7 @@ auto ProjectionExecutor::Next(Tuple* tuple, RID* rid) -> bool
   values.reserve(GetOutputSchema().GetColumnCount());
   for (const auto& expr : plan_->GetExpressions())
   {
-    values.push_back(
-        expr->Evaluate(&child_tuple, child_executor_->GetOutputSchema()));
+    values.push_back(expr->Evaluate(&child_tuple, child_executor_->GetOutputSchema()));
   }
 
   *tuple = Tuple{values, &GetOutputSchema()};

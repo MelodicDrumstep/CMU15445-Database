@@ -128,7 +128,8 @@ struct IndexInfo
  * use by executors within the DBMS execution engine. It handles
  * table creation, table lookup, index creation, and index lookup.
  */
-class Catalog
+class 
+Catalog
 {
   public:
   /** Indicates that an operation returning a `TableInfo*` failed */
